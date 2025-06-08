@@ -2,14 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="LokPass.Desktop.App"
              xmlns:local="using:LokPass.Desktop"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Light"
+             xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
   
-    <Application.Styles>
-        <FluentTheme />
-    </Application.Styles>
+     <Application.Styles>
+         <sukiUi:SukiTheme ThemeColor="Blue"/>
+     </Application.Styles>
+             
 </Application>

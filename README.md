@@ -1,6 +1,6 @@
 # LokPass – Offline Password Manager
 
-**LokPass** is a cross-platform, offline password manager and a personal learning project.  
+**LokPass** is a cross-platform, password manager and a personal learning project.  
 The backend is built with **.NET** and the application is designed to be extended with multiple types of **frontends** (such as CLI or desktop GUI).
 
 ---

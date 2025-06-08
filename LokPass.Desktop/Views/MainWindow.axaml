@@ -3,6 +3,8 @@
         xmlns:vm="using:LokPass.Desktop.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:suki="https://github.com/kikipoulet/SukiUI"
+        xmlns:core="clr-namespace:LokPass.Core;assembly=LokPass.Core"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="LokPass.Desktop.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -10,11 +12,60 @@
         Title="LokPass.Desktop">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
+    
+    <suki:SukiWindow.TitleBarContextMenu>
+        <ContextMenu>
+            <MenuItem Header="LokPass"/>
+        </ContextMenu>
+    </suki:SukiWindow.TitleBarContextMenu>
+    
+    <StackPanel>
+        
+        <!-- Add a new password -> todo: change textbox to password box -->
+        <suki:GlassCard>
+            <Grid ColumnDefinitions="*,*,*,Auto" VerticalAlignment="Center">
+                <TextBox Grid.Column="0"
+                         Margin="4"
+                         Watermark="Title"
+                         Text="{Binding NewTitle, Mode=TwoWay}"
+                         VerticalAlignment="Center" />
+                <TextBox Grid.Column="1"
+                         Margin="4"
+                         Watermark="Username"
+                         Text="{Binding NewUsername, Mode=TwoWay}"
+                         VerticalAlignment="Center" />
+                <TextBox Grid.Column="2"
+                         Margin="4"
+                         Watermark="Password"
+                         Text="{Binding NewPassword, Mode=TwoWay}"
+                         VerticalAlignment="Center" />
+                <Button Grid.Column="3"
+                        Margin="4"
+                        Command="{Binding AddUserPasswordCommand}"
+                        VerticalAlignment="Center">+</Button>
+            </Grid>
+        </suki:GlassCard>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        
+        <!-- List of Passwords -->
+        <suki:GlassCard>
+            <ItemsControl ItemsSource="{Binding UserPasswords}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="core:UserPassword">
+                        <suki:GlassCard Margin="0 0 0 10">
+                            <Grid ColumnDefinitions="*,*,Auto" VerticalAlignment="Center">
+                                <TextBlock Grid.Column="0" Padding="10" Text="{Binding Title}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Padding="10" Text="{Binding Username}" VerticalAlignment="Center"/>
+                                <!-- Buttons and other stuff -->
+                            </Grid>
+                        </suki:GlassCard>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
+        </suki:GlassCard>
+
+    </StackPanel>
 </Window>

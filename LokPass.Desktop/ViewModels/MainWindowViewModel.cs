@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LokPass.Core;
@@ -24,19 +25,19 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void AddUserPassword()
     {
-        if (!string.IsNullOrWhiteSpace(NewTitle))
-        {
-            var hashedPassword = _passwordHasher.HashPassword(NewPassword);
+        if (string.IsNullOrWhiteSpace(NewTitle)) return;
+        
+        var hashedPassword = _passwordHasher.HashPassword(NewPassword);
+        var parts = hashedPassword.Split(':');
             
-            UserPasswords.Add(
-                new UserPassword(NewTitle, NewUsername, hashedPassword)
-            );
+        UserPasswords.Add(
+            new UserPassword(NewTitle, NewUsername, parts[0], parts[1])
+        );
 
-            NewTitle = "";
-            NewUsername = "";
-            NewPassword = "";
+        NewTitle = "";
+        NewUsername = "";
+        NewPassword = "";
 
-            OnPropertyChanged(nameof(UserPasswords));
-        }
+        OnPropertyChanged(nameof(UserPasswords));
     }
 }

@@ -4,6 +4,11 @@ namespace LokPass.Core;
 
 public class PasswordHasher(int saltSize = 16, int keySize = 32, int iterations = 100_000)
 {
+    /// <summary>
+    /// Returns the used salt and the hashed password as a string, divided by a colon.
+    /// </summary>
+    /// <param name="password">the password as a string</param>
+    /// <returns></returns>
     public string HashPassword(string password)
     {
         var salt = new byte[saltSize];

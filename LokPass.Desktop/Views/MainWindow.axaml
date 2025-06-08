@@ -54,10 +54,11 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:UserPassword">
                         <suki:GlassCard Margin="0 0 0 10">
-                            <Grid ColumnDefinitions="*,*,Auto" VerticalAlignment="Center">
+                            <Grid ColumnDefinitions="*,*,*,Auto" VerticalAlignment="Center">
                                 <TextBlock Grid.Column="0" Padding="10" Text="{Binding Title}" VerticalAlignment="Center"/>
                                 <TextBlock Grid.Column="1" Padding="10" Text="{Binding Username}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="2" Padding="10" Text="{Binding Password}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Padding="10" Text="{Binding PasswordHash}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Padding="10" Text="{Binding Salt}" VerticalAlignment="Center"/>
                                 <!-- edit button and other stuff -->
                             </Grid>
                         </suki:GlassCard>

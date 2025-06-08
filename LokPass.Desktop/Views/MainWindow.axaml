@@ -47,7 +47,6 @@
                         VerticalAlignment="Center">+</Button>
             </Grid>
         </suki:GlassCard>
-
         
         <!-- List of Passwords -->
         <suki:GlassCard>
@@ -58,7 +57,8 @@
                             <Grid ColumnDefinitions="*,*,Auto" VerticalAlignment="Center">
                                 <TextBlock Grid.Column="0" Padding="10" Text="{Binding Title}" VerticalAlignment="Center"/>
                                 <TextBlock Grid.Column="1" Padding="10" Text="{Binding Username}" VerticalAlignment="Center"/>
-                                <!-- Buttons and other stuff -->
+                                <TextBlock Grid.Column="2" Padding="10" Text="{Binding PasswordHash}" VerticalAlignment="Center"/>
+                                <!-- edit button and other stuff -->
                             </Grid>
                         </suki:GlassCard>
                     </DataTemplate>

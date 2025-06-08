@@ -1,19 +1,8 @@
 namespace LokPass.Core;
 
-public class UserPassword
+public class UserPassword(string title, string username, string passwordHash)
 {
-    public UserPassword()
-    {
-        
-    }
-    public UserPassword(string title, string username, string passwordHash)
-    {
-        Title = title;
-        Username = username;
-        PasswordHash = passwordHash;
-    }
-
-    public string Title { get; set; }
-    public string? Username { get; set; }
-    public string? PasswordHash { get; set; }
+    public string Title { get; set; } = title;
+    public string? Username { get; set; } = username;
+    public string? PasswordHash { get; set; } = passwordHash;
 }

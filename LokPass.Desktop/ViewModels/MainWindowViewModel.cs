@@ -8,6 +8,8 @@ using LokPass.Core;
 namespace LokPass.Desktop.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
+    private readonly PasswordHasher _passwordHasher = new();
+    
     [ObservableProperty]
     private ObservableCollection<UserPassword> _userPasswords = [];
     
@@ -25,8 +27,10 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (!string.IsNullOrWhiteSpace(NewTitle))
         {
+            var hashedPassword = _passwordHasher.HashPassword(NewPassword);
+            
             UserPasswords.Add(
-                new UserPassword(NewTitle, NewUsername, NewPassword)
+                new UserPassword(NewTitle, NewUsername, hashedPassword)
             );
 
             NewTitle = "";

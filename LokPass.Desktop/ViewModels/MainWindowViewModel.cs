@@ -10,19 +10,18 @@ namespace LokPass.Desktop.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    private readonly ILogger<MainWindowViewModel> _logger;
     private readonly PasswordHasher _passwordHasher = new();
 
     [ObservableProperty] private string _newPassword = "";
-
     [ObservableProperty] private string _newTitle = "";
-
     [ObservableProperty] private string _newUsername = "";
-
     [ObservableProperty] private ObservableCollection<UserPassword> _userPasswords = [];
-    private readonly ILogger<MainWindowViewModel> _logger;
 
-    public MainWindowViewModel(){}
-    
+    public MainWindowViewModel()
+    {
+    }
+
     public MainWindowViewModel(ILogger<MainWindowViewModel> logger)
     {
         _logger = logger;
@@ -55,7 +54,6 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             _logger.LogError(e, "Failed to add user password");
         }
-        
     }
 
     [RelayCommand]

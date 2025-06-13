@@ -7,6 +7,6 @@ public interface ISettingsManager
 {
     LogLevel LogLevel { get; set; }
     string LogFilePath { get; set; }
-    void SetLoggingMode(LogLevel logLevel);
+    void SetLoggingLevel(LogLevel logLevel);
     void SetLogFilePath(string logFilePath);
 }

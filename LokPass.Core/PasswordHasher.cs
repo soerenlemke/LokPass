@@ -25,14 +25,14 @@ public class PasswordHasher(int saltSize = 16, int keySize = 32, int iterations 
     }
 
     /// <summary>
-    /// Returns true if the given password matches the stored hashed passwort
+    /// Returns true if the given password matches the hashed password
     /// </summary>
     /// <param name="password"></param>
-    /// <param name="storedHashedPassword"></param>
+    /// <param name="hashedPassword"></param>
     /// <returns></returns>
-    public bool VerifyHashedPassword(string password, string storedHashedPassword)
+    public bool IsValidPassword(string password, string hashedPassword)
     {
-        var parts = storedHashedPassword.Split(':');
+        var parts = hashedPassword.Split(':');
         if (parts.Length != 2)
             return false;
 

@@ -24,6 +24,12 @@ public class PasswordHasher(int saltSize = 16, int keySize = 32, int iterations 
         return Convert.ToBase64String(salt) + ":" + Convert.ToBase64String(hash);
     }
 
+    /// <summary>
+    /// Returns true if the given password matches the stored hashed passwort
+    /// </summary>
+    /// <param name="password"></param>
+    /// <param name="storedHashedPassword"></param>
+    /// <returns></returns>
     public bool VerifyHashedPassword(string password, string storedHashedPassword)
     {
         var parts = storedHashedPassword.Split(':');

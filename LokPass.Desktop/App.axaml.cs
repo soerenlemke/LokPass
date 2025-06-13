@@ -1,11 +1,11 @@
 using System;
-using System.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
 using LokPass.Core.Logging;
+using LokPass.Core.Settings;
 using LokPass.Desktop.ViewModels;
 using LokPass.Desktop.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,17 +24,15 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         var services = new ServiceCollection();
-        
-        // todo: make this adjustable inside the apps settings
-        var logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "lokpass.log");
-        
+        services.AddSingleton<ISettingsManager, SettingsManager>();
         services.AddLogging(configure =>
         {
             configure.ClearProviders();
-            configure.AddProvider(new FileLoggerProvider(logPath));
+            configure.AddProvider(new FileLoggerProvider(
+                services.BuildServiceProvider().GetRequiredService<ISettingsManager>()
+            ));
             configure.SetMinimumLevel(LogLevel.Information);
         });
-        
         Services = services.BuildServiceProvider();
         
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

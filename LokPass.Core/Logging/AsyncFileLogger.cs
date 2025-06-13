@@ -1,19 +1,24 @@
 using System.Collections.Concurrent;
+using LokPass.Core.Settings;
 using Microsoft.Extensions.Logging;
 
 namespace LokPass.Core.Logging;
 
 public class AsyncFileLogger : ILogger
 {
+    private readonly ISettingsManager _settingsManager;
     private static bool _isConsumerStarted;
     private static readonly Lock StartLock = new();
     private readonly string _categoryName;
-    private readonly string _filePath;
     private readonly BlockingCollection<string> _logQueue;
 
-    public AsyncFileLogger(string filePath, string categoryName, BlockingCollection<string> logQueue)
+    public AsyncFileLogger(
+        ISettingsManager settingsManager,
+        string categoryName,
+        BlockingCollection<string> logQueue
+    )
     {
-        _filePath = filePath;
+        _settingsManager = settingsManager;
         _categoryName = categoryName;
         _logQueue = logQueue;
 
@@ -57,7 +62,7 @@ public class AsyncFileLogger : ILogger
         foreach (var log in _logQueue.GetConsumingEnumerable())
             try
             {
-                File.AppendAllText(_filePath, log + Environment.NewLine);
+                File.AppendAllText(_settingsManager.LogFilePath, log + Environment.NewLine);
             }
             catch (Exception e)
             {

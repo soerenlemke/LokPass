@@ -61,4 +61,16 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         _logger.LogInformation("ClickSettingsButton");
     }
+
+    [RelayCommand]
+    private void CopyUsername()
+    {
+        _logger.LogInformation("ClickCopyUsername");
+    }
+    
+    [RelayCommand]
+    private void CopyPassword()
+    {
+        _logger.LogInformation("ClickCopyPassword");
+    }
 }

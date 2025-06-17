@@ -1,4 +1,4 @@
-# LokPass – Offline Password Manager
+# LokPass – Password Manager
 
 **LokPass** is a cross-platform, password manager and a personal learning project.  
 The backend is built with **.NET** and the application is designed to be extended with multiple types of **frontends** (such as CLI or desktop GUI).
@@ -31,11 +31,14 @@ The backend is written in **.NET** and provides:
 
 ---
 
-## Planned Frontends
+## Frontend
+
+Starting:
+
+- Desktop UI (Avalonia)
 
 To be defined – possible options include:
 
-- Desktop UI (e.g. Avalonia)
 - Command Line Interface (CLI)
 - Web-based or mobile clients (future consideration)
 

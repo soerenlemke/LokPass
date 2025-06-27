@@ -9,7 +9,7 @@ public class PasswordHasher(int saltSize = 16, int keySize = 32, int iterations 
     /// </summary>
     /// <param name="password">the password as a string</param>
     /// <returns></returns>
-    public string HashPassword(string password)
+    public HashedPassword HashPassword(string password)
     {
         var salt = new byte[saltSize];
         RandomNumberGenerator.Fill(salt);
@@ -21,7 +21,7 @@ public class PasswordHasher(int saltSize = 16, int keySize = 32, int iterations 
             HashAlgorithmName.SHA256,
             keySize);
 
-        return Convert.ToBase64String(salt) + ":" + Convert.ToBase64String(hash);
+        return new HashedPassword(hash, salt);
     }
 
     /// <summary>
@@ -30,22 +30,15 @@ public class PasswordHasher(int saltSize = 16, int keySize = 32, int iterations 
     /// <param name="password"></param>
     /// <param name="hashedPassword"></param>
     /// <returns></returns>
-    public bool IsValidPassword(string password, string hashedPassword)
+    public bool IsValidPassword(HashedPassword  hashedPassword)
     {
-        var parts = hashedPassword.Split(':');
-        if (parts.Length != 2)
-            return false;
-
-        var salt = Convert.FromBase64String(parts[0]);
-        var hash = Convert.FromBase64String(parts[1]);
-
         var hashToCheck = Rfc2898DeriveBytes.Pbkdf2(
-            password,
-            salt,
+            hashedPassword.Password,
+            hashedPassword.Salt,
             iterations,
             HashAlgorithmName.SHA256,
             keySize);
 
-        return CryptographicOperations.FixedTimeEquals(hash, hashToCheck);
+        return CryptographicOperations.FixedTimeEquals(hashedPassword.Password, hashToCheck);
     }
 }

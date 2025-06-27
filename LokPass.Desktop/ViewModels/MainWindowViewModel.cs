@@ -36,11 +36,12 @@ public partial class MainWindowViewModel : ViewModelBase
         try
         {
             var hashedPassword = _passwordHasher.HashPassword(NewPassword);
-            var parts = hashedPassword.Split(':');
 
+            // todo: add to local db
+            
             UserPasswords.Add(
                 new UserPassword(
-                    NewTitle, NewUsername, parts[0], parts[1])
+                    NewTitle, NewUsername, hashedPassword)
             );
 
             NewTitle = "";

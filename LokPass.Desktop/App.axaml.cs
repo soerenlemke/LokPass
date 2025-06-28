@@ -4,12 +4,11 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
-using LokPass.Core.Logging;
-using LokPass.Core.Settings;
 using LokPass.Desktop.ViewModels;
 using LokPass.Desktop.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace LokPass.Desktop;
 public partial class App : Application
@@ -23,15 +22,16 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+        
         var services = new ServiceCollection();
-        services.AddSingleton<ISettingsManager, SettingsManager>();
-        services.AddLogging(configure =>
+        services.AddLogging(loggingBuilder =>
         {
-            configure.ClearProviders();
-            configure.AddProvider(new FileLoggerProvider(
-                services.BuildServiceProvider().GetRequiredService<ISettingsManager>()
-            ));
-            configure.SetMinimumLevel(LogLevel.Information);
+            loggingBuilder.ClearProviders();
+            loggingBuilder.AddSerilog();
         });
         Services = services.BuildServiceProvider();
         

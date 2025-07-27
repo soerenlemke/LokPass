@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace LokPass.Core;
+namespace LokPass.Core.Password;
 
 public class PasswordHasher(int saltSize = 16, int keySize = 32, int iterations = 100_000)
 {

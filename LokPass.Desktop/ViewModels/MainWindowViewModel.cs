@@ -2,8 +2,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LokPass.Core;
-using LokPass.Desktop.Models;
+using LokPass.Core.Password;
 using Microsoft.Extensions.Logging;
 
 namespace LokPass.Desktop.ViewModels;
@@ -35,6 +34,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
+            // todo: introduce PasswordService & PasswordRepository for accessing db all hidden in PasswordService
             var hashedPassword = _passwordHasher.HashPassword(NewPassword);
 
             // todo: add to local db
@@ -55,6 +55,12 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             _logger.LogError(e, "Failed to add user password");
         }
+    }
+
+    [RelayCommand]
+    private void EditUserPassword(UserPassword userPassword)
+    {
+        _logger.LogError("Editing user password not implemented!");
     }
 
     [RelayCommand]

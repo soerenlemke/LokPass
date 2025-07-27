@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:suki="https://github.com/kikipoulet/SukiUI"
-    xmlns:models="clr-namespace:LokPass.Desktop.Models"
+    xmlns:core="clr-namespace:LokPass.Core.Password;assembly=LokPass.Core"
     mc:Ignorable="d"
     d:DesignWidth="800"
     d:DesignHeight="450"
@@ -56,34 +56,22 @@
                 <TextBlock Grid.Column="0" Text="Title" FontWeight="Bold" VerticalAlignment="Center" TextAlignment="Left"/>
                 <TextBlock Grid.Column="1" Text="Username" FontWeight="Bold" VerticalAlignment="Center" TextAlignment="Left"/>
                 <TextBlock Grid.Column="2" Text="Password" FontWeight="Bold" VerticalAlignment="Center" TextAlignment="Left"/>
-                <TextBlock Grid.Column="3" Text="Salt" FontWeight="Bold" VerticalAlignment="Center" TextAlignment="Left"/>
             </Grid>
         </suki:GlassCard>
         
         <!-- list of Passwords -->
         <ItemsControl ItemsSource="{Binding UserPasswords}">
             <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="models:UserPassword">
+                <DataTemplate x:DataType="core:UserPassword">
                     <suki:GlassCard Margin="0 0 0 10">
-                        <!-- not working - todo: fix this
-                        <suki:GlassCard.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Copy Username"
-                                               Command="{Binding DataContext.CopyUsernameCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                               CommandParameter="{Binding Username}" />
-                                <MenuItem Header="Copy Password"
-                                               Command="{Binding DataContext.CopyPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                               CommandParameter="{Binding PasswordHash}" />
-                            </ContextMenu>
-                        </suki:GlassCard.ContextMenu>
-                        -->
-                        
-                        <Grid ColumnDefinitions="*,*,*,*" VerticalAlignment="Center">
-                            <TextBlock Grid.Column="0" Text="{Binding Title}" VerticalAlignment="Center" TextAlignment="Left"/>
-                            <TextBlock Grid.Column="1" Text="{Binding Username}" VerticalAlignment="Center" TextAlignment="Left"/>
-                            <TextBlock Grid.Column="2" Text="{Binding PasswordHash}" VerticalAlignment="Center" TextAlignment="Left"/>
-                            <TextBlock Grid.Column="3" Text="{Binding Salt}" VerticalAlignment="Center" TextAlignment="Left"/>
-                        </Grid>
+                        <StackPanel Orientation="Horizontal" Margin="4">
+                            <TextBlock Text="{Binding Title}" Width="100"/>
+                            <TextBlock Text="{Binding Username}" Width="100"/>
+                            <TextBlock Text="{Binding PasswordHash}" Width="100"/>
+                            <Button Content="Edit"
+                                    Command="{Binding DataContext.EditUserPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}" />
+                        </StackPanel>
                     </suki:GlassCard>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

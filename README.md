@@ -3,7 +3,6 @@
 ![image](https://github.com/user-attachments/assets/75571a9f-a731-48b3-9abc-449c8db72d74)
 
 **LokPass** is a cross-platform, password manager and a personal learning project.  
-The backend is built with **.NET** and the application is designed to be extended with multiple types of **frontends** (such as CLI or desktop GUI).
 
 ---
 
@@ -14,11 +13,6 @@ The goal of LokPass is to create an extensible application that:
 - Runs entirely offline – no cloud or external services (syncing solutions may be added in the future)
 - Stores passwords using modern cryptographic standards
 - Is modular and flexible in how users interact with it (UI, CLI, API)
-- Is fully open source and auditable
-- Serves as a practical learning project for .NET development, focusing on:
-    - System-level programming
-    - Architecture
-    - Cryptography and data storage
 
 ---
 
@@ -29,7 +23,6 @@ The backend is written in **.NET** and provides:
 - Password storage (e.g. AES-GCM encryption, Argon2 hashing)
 - Data persistence (planned: SQLite)
 - Local API endpoints (planned: REST or gRPC)
-- Clear separation of core logic and interfaces for easy extension
 
 ---
 

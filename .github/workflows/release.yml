@@ -1,0 +1,101 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Publish Windows
+      run: dotnet publish LokPass.Desktop/LokPass.Desktop.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o publish/win-x64
+
+    - name: Upload Windows build
+      uses: actions/upload-artifact@v4
+      with:
+        name: lokpass-windows-x64
+        path: publish/win-x64
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Publish macOS
+      run: dotnet publish LokPass.Desktop/LokPass.Desktop.csproj -c Release -r osx-x64 --self-contained -p:PublishSingleFile=true -o publish/osx-x64
+
+    - name: Upload macOS build
+      uses: actions/upload-artifact@v4
+      with:
+        name: lokpass-macos-x64
+        path: publish/osx-x64
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Publish Linux
+      run: dotnet publish LokPass.Desktop/LokPass.Desktop.csproj -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true -o publish/linux-x64
+
+    - name: Upload Linux build
+      uses: actions/upload-artifact@v4
+      with:
+        name: lokpass-linux-x64
+        path: publish/linux-x64
+
+  create-release:
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create archives
+      run: |
+        cd artifacts/lokpass-windows-x64 && zip -r ../../LokPass-Windows-x64.zip .
+        cd ../../artifacts/lokpass-macos-x64 && zip -r ../../LokPass-macOS-x64.zip .
+        cd ../../artifacts/lokpass-linux-x64 && tar -czvf ../../LokPass-Linux-x64.tar.gz .
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          LokPass-Windows-x64.zip
+          LokPass-macOS-x64.zip
+          LokPass-Linux-x64.tar.gz
+        generate_release_notes: true

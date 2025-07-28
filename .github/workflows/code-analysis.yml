@@ -1,0 +1,42 @@
+name: Code-Analyse
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * 1'  # Läuft jeden Montag um 2:00 UTC
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Install dotnet-format
+      run: dotnet tool install -g dotnet-format
+
+    - name: Run dotnet format
+      run: dotnet format --verify-no-changes
+
+    - name: Install .NET analyzers
+      run: |
+        dotnet add LokPass.Core/LokPass.Core.csproj package Microsoft.CodeAnalysis.NetAnalyzers
+        dotnet add LokPass.Desktop/LokPass.Desktop.csproj package Microsoft.CodeAnalysis.NetAnalyzers
+
+    - name: Run Code Analysis
+      run: dotnet build /p:AnalysisMode=All
+
+    - name: SonarCloud Scan
+      if: false  # Deaktiviert, kann später aktiviert werden, wenn SonarCloud eingerichtet ist
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

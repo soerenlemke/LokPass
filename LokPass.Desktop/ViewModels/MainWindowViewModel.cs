@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LokPass.Core.Password;
@@ -28,14 +29,14 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void AddUserPassword()
+    private async Task AddUserPassword()
     {
         if (string.IsNullOrWhiteSpace(NewTitle)) return;
 
         try
         {
             // todo: introduce PasswordService & PasswordRepository for accessing db all hidden in PasswordService
-            var hashedPassword = _passwordHasher.HashPassword(NewPassword);
+            var hashedPassword = await _passwordHasher.HashPasswordAsync(NewPassword);
 
             // todo: add to local db
             

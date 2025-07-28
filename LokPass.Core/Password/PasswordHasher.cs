@@ -1,25 +1,29 @@
 using System.Security.Cryptography;
+using Konscious.Security.Cryptography;
 
 namespace LokPass.Core.Password;
 
-public class PasswordHasher(int saltSize = 16, int keySize = 32, int iterations = 100_000)
+public class PasswordHasher(int saltSize = 16, int memorySize = 65536, int iterations = 3, int degreeOfParallelism = 1)
 {
     /// <summary>
     /// Returns the used salt and the hashed password as a string, divided by a colon.
     /// </summary>
     /// <param name="password">the password as a string</param>
     /// <returns></returns>
-    public HashedPassword HashPassword(string password)
+    public async Task<HashedPassword> HashPasswordAsync(string password)
     {
         var salt = new byte[saltSize];
         RandomNumberGenerator.Fill(salt);
 
-        var hash = Rfc2898DeriveBytes.Pbkdf2(
-            password,
-            salt,
-            iterations,
-            HashAlgorithmName.SHA256,
-            keySize);
+        using var argon2 = new Argon2id(System.Text.Encoding.UTF8.GetBytes(password))
+        {
+            Salt = salt,
+            DegreeOfParallelism = degreeOfParallelism,
+            Iterations = iterations,
+            MemorySize = memorySize
+        };
+
+        var hash = await argon2.GetBytesAsync(32); // 32 bytes = 256 bits
 
         return new HashedPassword(hash, salt);
     }
@@ -30,14 +34,17 @@ public class PasswordHasher(int saltSize = 16, int keySize = 32, int iterations 
     /// <param name="password"></param>
     /// <param name="hashedPassword"></param>
     /// <returns></returns>
-    public bool IsValidPassword(HashedPassword  hashedPassword)
+    public async Task<bool> IsValidPasswordAsync(string password, HashedPassword hashedPassword)
     {
-        var hashToCheck = Rfc2898DeriveBytes.Pbkdf2(
-            hashedPassword.Password,
-            hashedPassword.Salt,
-            iterations,
-            HashAlgorithmName.SHA256,
-            keySize);
+        using var argon2 = new Argon2id(System.Text.Encoding.UTF8.GetBytes(password))
+        {
+            Salt = hashedPassword.Salt,
+            DegreeOfParallelism = degreeOfParallelism,
+            Iterations = iterations,
+            MemorySize = memorySize
+        };
+
+        var hashToCheck = await argon2.GetBytesAsync(32);
 
         return CryptographicOperations.FixedTimeEquals(hashedPassword.Password, hashToCheck);
     }

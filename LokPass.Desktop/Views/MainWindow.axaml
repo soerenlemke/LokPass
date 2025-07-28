@@ -7,75 +7,168 @@
     xmlns:suki="https://github.com/kikipoulet/SukiUI"
     xmlns:core="clr-namespace:LokPass.Core.Password;assembly=LokPass.Core"
     mc:Ignorable="d"
-    d:DesignWidth="800"
-    d:DesignHeight="450"
+    d:DesignWidth="1000"
+    d:DesignHeight="700"
     x:Class="LokPass.Desktop.Views.MainWindow"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
-    Title="LokPass.Desktop"
+    Title="LokPass - Password Manager"
     IsMenuVisible="True">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <!-- menu entries -->
     <suki:SukiWindow.MenuItems>
         <MenuItem Header="Settings" />
-        <!-- todo: add panel for choosing the logging -->
+        <MenuItem Header="Export" />
+        <MenuItem Header="Import" />
     </suki:SukiWindow.MenuItems>
 
-    <!-- title bar -->
     <suki:SukiWindow.TitleBarContextMenu>
         <ContextMenu>
-            <MenuItem Header="LokPass" 
-                      Command="{Binding SettingsButtonCommand}"/>
+            <MenuItem Header="LokPass" Command="{Binding SettingsButtonCommand}"/>
         </ContextMenu>
     </suki:SukiWindow.TitleBarContextMenu>
 
-    <StackPanel>
-        <!-- add a new password -->
-        <suki:GlassCard>
-            <Grid ColumnDefinitions="*,*,*,Auto" VerticalAlignment="Center" Height="36">
-                <TextBox Grid.Column="0" Margin="4" Watermark="Title" Text="{Binding NewTitle, Mode=TwoWay}" VerticalAlignment="Center" />
-                <TextBox Grid.Column="1" Margin="4" Watermark="Username" Text="{Binding NewUsername, Mode=TwoWay}" VerticalAlignment="Center" />
-                <TextBox Grid.Column="2" Margin="4" Watermark="Password" Text="{Binding NewPassword, Mode=TwoWay}" VerticalAlignment="Center" />
-                <Button Grid.Column="3"
-                        Command="{Binding AddUserPasswordCommand}"
-                        Padding="0"
-                        MinWidth="28"
-                        MinHeight="28"
-                        VerticalAlignment="Top"
-                        Margin="4">+</Button>
+    <Grid RowDefinitions="Auto,Auto,*" Margin="20">
+        
+        <!-- Add New Password Section -->
+        <suki:GlassCard Grid.Row="0" Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="Add New Password" 
+                          FontSize="16" 
+                          FontWeight="Bold" 
+                          Margin="0,0,0,10"/>
+                
+                <Grid ColumnDefinitions="2*,2*,2*,Auto" Height="40">
+                    <TextBox Grid.Column="0" 
+                            Margin="0,0,10,0" 
+                            Watermark="Title (e.g. Gmail, Facebook)" 
+                            Text="{Binding NewTitle, Mode=TwoWay}" 
+                            VerticalContentAlignment="Center" />
+                    
+                    <TextBox Grid.Column="1" 
+                            Margin="0,0,10,0" 
+                            Watermark="Username/Email" 
+                            Text="{Binding NewUsername, Mode=TwoWay}" 
+                            VerticalContentAlignment="Center" />
+                    
+                    <TextBox Grid.Column="2" 
+                            Margin="0,0,10,0" 
+                            Watermark="Password" 
+                            Text="{Binding NewPassword, Mode=TwoWay}" 
+                            PasswordChar="•" 
+                            VerticalContentAlignment="Center"
+                             />
+                    
+                    <Button Grid.Column="3"
+                           Command="{Binding AddUserPasswordCommand}"
+                           Content="Add"
+                           Classes="Accent"
+                           Padding="15,0"
+                           Height="40"/>
+                </Grid>
+            </StackPanel>
+        </suki:GlassCard>
+
+        <!-- Search and Filter Section -->
+        <suki:GlassCard Grid.Row="1" Margin="0,0,0,20">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBox Grid.Column="0"
+                        Watermark="🔍 Search passwords..."
+                        Text="{Binding SearchText, Mode=TwoWay}"
+                        VerticalContentAlignment="Center"
+                        Height="35"/>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
+                    <TextBlock Text="Count: " VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding UserPasswords.Count}" 
+                              FontWeight="Bold" 
+                              VerticalAlignment="Center"/>
+                </StackPanel>
             </Grid>
         </suki:GlassCard>
-        
-        <!-- column headers -->
-        <suki:GlassCard Height="60" Margin="0 0 0 10">
-            <Grid ColumnDefinitions="*,*,*,*" VerticalAlignment="Center">
-                <TextBlock Grid.Column="0" Text="Title" FontWeight="Bold" VerticalAlignment="Center" TextAlignment="Left"/>
-                <TextBlock Grid.Column="1" Text="Username" FontWeight="Bold" VerticalAlignment="Center" TextAlignment="Left"/>
-                <TextBlock Grid.Column="2" Text="Password" FontWeight="Bold" VerticalAlignment="Center" TextAlignment="Left"/>
-            </Grid>
-        </suki:GlassCard>
-        
-        <!-- list of Passwords -->
-        <ItemsControl ItemsSource="{Binding UserPasswords}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="core:UserPassword">
-                    <suki:GlassCard Margin="0 0 0 10">
-                        <StackPanel Orientation="Horizontal" Margin="4">
-                            <TextBlock Text="{Binding Title}" Width="100"/>
-                            <TextBlock Text="{Binding Username}" Width="100"/>
-                            <TextBlock Text="{Binding PasswordHash}" Width="100"/>
-                            <Button Content="Edit"
-                                    Command="{Binding DataContext.EditUserPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                    CommandParameter="{Binding}" />
-                        </StackPanel>
-                    </suki:GlassCard>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </StackPanel>
-    
+
+        <!-- Password List -->
+        <ScrollViewer Grid.Row="2">
+            <ItemsControl ItemsSource="{Binding UserPasswords}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="core:UserPassword">
+                        <suki:GlassCard Margin="0,0,0,15" Padding="20">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+
+                                <!-- Content -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Title}" 
+                                              FontSize="16" 
+                                              FontWeight="Bold" 
+                                              Margin="0,0,0,5"/>
+                                    
+                                    <TextBlock Text="{Binding Username}" 
+                                              FontSize="14" 
+                                              Foreground="#7f8c8d" 
+                                              Margin="0,0,0,5"/>
+                                    
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Password: " 
+                                                  FontSize="12" 
+                                                  Foreground="#95a5a6"/>
+                                        <TextBlock Text="••••••••" 
+                                                  FontSize="12" 
+                                                  Foreground="#95a5a6"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Actions -->
+                                <StackPanel Grid.Column="2" 
+                                           Orientation="Horizontal" 
+                                           VerticalAlignment="Center" 
+                                           Spacing="10">
+                                    
+                                    <Button Content="👁️" 
+                                           ToolTip.Tip="Show password"
+                                           Command="{Binding DataContext.ShowPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           CommandParameter="{Binding}"
+                                           Classes="Accent"
+                                           Width="40"
+                                           Height="40"/>
+                                    
+                                    <Button Content="📋" 
+                                           ToolTip.Tip="Copy username"
+                                           Command="{Binding DataContext.CopyUsernameCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           CommandParameter="{Binding}"
+                                           Width="40"
+                                           Height="40"/>
+                                    
+                                    <Button Content="🔑" 
+                                           ToolTip.Tip="Copy password"
+                                           Command="{Binding DataContext.CopyPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           CommandParameter="{Binding}"
+                                           Width="40"
+                                           Height="40"/>
+                                    
+                                    <Button Content="✏️" 
+                                           ToolTip.Tip="Edit"
+                                           Command="{Binding DataContext.EditUserPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           CommandParameter="{Binding}"
+                                           Classes="Success"
+                                           Width="40"
+                                           Height="40"/>
+                                    
+                                    <Button Content="🗑️" 
+                                           ToolTip.Tip="Delete"
+                                           Command="{Binding DataContext.DeleteUserPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           CommandParameter="{Binding}"
+                                           Classes="Danger"
+                                           Width="40"
+                                           Height="40"/>
+                                </StackPanel>
+                            </Grid>
+                        </suki:GlassCard>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
 </suki:SukiWindow>

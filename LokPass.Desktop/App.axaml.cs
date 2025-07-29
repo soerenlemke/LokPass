@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
-using System.Linq;
 using Avalonia.Markup.Xaml;
+using LokPass.Core.Password;
+using LokPass.Core.Password.Repositories;
 using LokPass.Desktop.ViewModels;
 using LokPass.Desktop.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,10 +13,11 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace LokPass.Desktop;
-public partial class App : Application
+
+public class App : Application
 {
     public static IServiceProvider Services { get; private set; } = null!;
-    
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -26,29 +29,49 @@ public partial class App : Application
             .MinimumLevel.Debug()
             .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
-        
+
         var services = new ServiceCollection();
+
+        // Configure logging
         services.AddLogging(loggingBuilder =>
         {
             loggingBuilder.ClearProviders();
             loggingBuilder.AddSerilog();
         });
+
+        // Register your password services
+        ConfigurePasswordServices(services);
+
+        // Build the service provider
         Services = services.BuildServiceProvider();
-        
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            
+
             var logger = Services.GetRequiredService<ILogger<MainWindowViewModel>>();
+            var passwordService = Services.GetRequiredService<IPasswordService>();
+
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(logger),
+                DataContext = new MainWindowViewModel(logger, passwordService)
             };
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private void ConfigurePasswordServices(IServiceCollection services)
+    {
+        // Register core password services
+        services.AddSingleton<PasswordHasher>();
+        services.AddSingleton<IPasswordRepository, InMemoryPasswordRepository>();
+        services.AddSingleton<IPasswordService, PasswordService>();
+
+        // Register ViewModels if needed
+        services.AddTransient<MainWindowViewModel>();
     }
 
     private void DisableAvaloniaDataAnnotationValidation()
@@ -58,9 +81,6 @@ public partial class App : Application
             BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
 
         // remove each entry found
-        foreach (var plugin in dataValidationPluginsToRemove)
-        {
-            BindingPlugins.DataValidators.Remove(plugin);
-        }
+        foreach (var plugin in dataValidationPluginsToRemove) BindingPlugins.DataValidators.Remove(plugin);
     }
 }

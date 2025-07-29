@@ -1,6 +1,6 @@
-namespace LokPass.Core.Password;
+namespace LokPass.Core.Password.Repositories;
 
-public interface IPasswordService
+public interface IPasswordRepository
 {
     Task<IEnumerable<UserPassword>> GetAllPasswordsAsync();
     Task<UserPassword?> GetPasswordByIdAsync(Guid id);

@@ -4,7 +4,7 @@ using Konscious.Security.Cryptography;
 namespace LokPass.Core.Password;
 
 public class PasswordHasher(int saltSize = 16, int memorySize = 65536, int iterations = 3, int degreeOfParallelism = 1)
-{
+{ 
     /// <summary>
     /// Returns the used salt and the hashed password as a string, divided by a colon.
     /// </summary>

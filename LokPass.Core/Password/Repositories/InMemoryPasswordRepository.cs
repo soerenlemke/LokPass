@@ -5,7 +5,7 @@ namespace LokPass.Core.Password.Repositories;
 public class InMemoryPasswordRepository : IPasswordRepository
 {
     private readonly ConcurrentDictionary<Guid, UserPassword> _passwords = [];
-    
+
     public Task<IEnumerable<UserPassword>> GetAllPasswordsAsync()
     {
         return Task.FromResult(_passwords.Values.AsEnumerable());
@@ -26,7 +26,7 @@ public class InMemoryPasswordRepository : IPasswordRepository
     {
         if (!_passwords.TryGetValue(password.Id, out var existingPassword)) return Task.CompletedTask;
         if (!HasChanges(existingPassword, password)) return Task.CompletedTask;
-        
+
         password.UpdatedAt = DateTime.UtcNow;
         _passwords.TryUpdate(password.Id, password, existingPassword);
 
@@ -37,11 +37,12 @@ public class InMemoryPasswordRepository : IPasswordRepository
     {
         return Task.FromResult(_passwords.TryRemove(id, out _));
     }
-    
+
     private static bool HasChanges(UserPassword existing, UserPassword updated)
     {
         return existing.Title != updated.Title ||
                existing.Username != updated.Username ||
-               existing.PasswordHash != updated.PasswordHash;
+               existing.PasswordHash != updated.PasswordHash ||
+               existing.Salt != updated.Salt;
     }
 }

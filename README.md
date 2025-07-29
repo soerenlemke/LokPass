@@ -13,6 +13,11 @@ The goal of LokPass is to create an extensible application that:
 - Runs entirely offline – no cloud or external services (syncing solutions may be added in the future)
 - Stores passwords using modern cryptographic standards
 - Is modular and flexible in how users interact with it (UI, CLI, API)
+- Has an own password generator
+- Can import from KeePass-Files (.kdbx)
+- Automatic Backups
+- Has a modern UI
+- Has portable builds with no installations needed
 
 ---
 

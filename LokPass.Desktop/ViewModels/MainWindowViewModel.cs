@@ -111,55 +111,6 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
-    private async Task EditUserPassword(UserPassword userPassword)
-    {
-        try
-        {
-            // TODO: open a dialog
-            var newTitle = userPassword.Title + " (edited)";
-            var newUsername = userPassword.Username;
-
-            await _passwordService.EditPasswordAsync(
-                userPassword.Id,
-                newTitle,
-                newUsername
-            );
-
-            await RefreshPasswordsAsync();
-
-            _logger.LogInformation("Edited password: {userPasswordTitle}", userPassword.Title);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Failed to edit user password");
-        }
-    }
-
-    [RelayCommand]
-    private async Task DeleteUserPassword(UserPassword userPassword)
-    {
-        try
-        {
-            await _passwordService.DeletePasswordAsync(userPassword.Id);
-
-            UserPasswords.Remove(userPassword);
-            FilteredPasswords.Remove(userPassword);
-
-            _logger.LogInformation($"Deleted password: {userPassword.Title}");
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Failed to delete user password");
-        }
-    }
-
-    [RelayCommand]
-    private async Task RefreshPasswords()
-    {
-        await RefreshPasswordsAsync();
-    }
-
     private async Task RefreshPasswordsAsync()
     {
         try
@@ -208,7 +159,23 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void SettingsButton()
     {
-        _logger?.LogInformation("ClickSettingsButton");
+        _logger.LogInformation("ClickSettingsButton");
+    }
+
+    // commands per password entry
+
+    [RelayCommand]
+    private void ShowPassword(UserPassword userPassword)
+    {
+        try
+        {
+            // show decrypted password
+            _logger.LogInformation("Show password requested for: {userPasswordTitle}", userPassword.Title);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to show password");
+        }
     }
 
     [RelayCommand]
@@ -241,16 +208,45 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void ShowPassword(UserPassword userPassword)
+    private async Task EditUserPassword(UserPassword userPassword)
     {
         try
         {
-            // show decrypted password
-            _logger.LogInformation("Show password requested for: {userPasswordTitle}", userPassword.Title);
+            // TODO: open a dialog
+            var newTitle = userPassword.Title + " (edited)";
+            var newUsername = userPassword.Username;
+
+            await _passwordService.EditPasswordAsync(
+                userPassword.Id,
+                newTitle,
+                newUsername
+            );
+
+            await RefreshPasswordsAsync();
+
+            _logger.LogInformation("Edited password: {userPasswordTitle}", userPassword.Title);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to show password");
+            _logger.LogError(e, "Failed to edit user password");
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteUserPassword(UserPassword userPassword)
+    {
+        try
+        {
+            await _passwordService.DeletePasswordAsync(userPassword.Id);
+
+            UserPasswords.Remove(userPassword);
+            FilteredPasswords.Remove(userPassword);
+
+            _logger.LogInformation($"Deleted password: {userPassword.Title}");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to delete user password");
         }
     }
 }

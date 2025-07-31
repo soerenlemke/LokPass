@@ -22,8 +22,6 @@
 
     <suki:SukiWindow.MenuItems>
         <MenuItem Header="Settings" Command="{Binding SettingsButtonCommand}" InputGesture="Alt+S" />
-        <MenuItem Header="Export" Command="{Binding RefreshPasswordsCommand}" InputGesture="Alt+E" />
-        <MenuItem Header="Import" Command="{Binding RefreshPasswordsCommand}" InputGesture="Alt+I" />
     </suki:SukiWindow.MenuItems>
 
     <suki:SukiWindow.TitleBarContextMenu>
@@ -81,7 +79,6 @@
                     <Button Grid.Column="3"
                             Command="{Binding AddUserPasswordCommand}"
                             Content="Add"
-                            Classes="Accent"
                             Padding="15,0"
                             Height="40"
                             TabIndex="3"
@@ -155,56 +152,56 @@
                                         VerticalAlignment="Center"
                                         Spacing="10">
 
-                                <Button Classes="icon-button"
-                                        Command="{Binding DataContext.ShowPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                        CommandParameter="{Binding}"
-                                        Width="40"
-                                        Height="40"
-                                        AutomationProperties.Name="Show password">
+                                <Button
+                                    Command="{Binding DataContext.ShowPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}"
+                                    Width="40"
+                                    Height="40"
+                                    AutomationProperties.Name="Show password">
                                     <TextBlock Text="👁️" FontSize="16" HorizontalAlignment="Center"
                                                VerticalAlignment="Center" />
                                     <ToolTip.Tip>Show password</ToolTip.Tip>
                                 </Button>
 
-                                <Button Classes="icon-button"
-                                        Command="{Binding DataContext.CopyUsernameCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                        CommandParameter="{Binding}"
-                                        Width="40"
-                                        Height="40"
-                                        AutomationProperties.Name="Copy username">
+                                <Button
+                                    Command="{Binding DataContext.CopyUsernameCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}"
+                                    Width="40"
+                                    Height="40"
+                                    AutomationProperties.Name="Copy username">
                                     <TextBlock Text="📋" FontSize="16" HorizontalAlignment="Center"
                                                VerticalAlignment="Center" />
                                     <ToolTip.Tip>Copy username (Ctrl+C)</ToolTip.Tip>
                                 </Button>
 
-                                <Button Classes="icon-button"
-                                        Command="{Binding DataContext.CopyPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                        CommandParameter="{Binding}"
-                                        Width="40"
-                                        Height="40"
-                                        AutomationProperties.Name="Copy password">
+                                <Button
+                                    Command="{Binding DataContext.CopyPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}"
+                                    Width="40"
+                                    Height="40"
+                                    AutomationProperties.Name="Copy password">
                                     <TextBlock Text="🔑" FontSize="16" HorizontalAlignment="Center"
                                                VerticalAlignment="Center" />
                                     <ToolTip.Tip>Copy password (Ctrl+P)</ToolTip.Tip>
                                 </Button>
 
-                                <Button Classes="icon-button"
-                                        Command="{Binding DataContext.EditUserPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                        CommandParameter="{Binding}"
-                                        Width="40"
-                                        Height="40"
-                                        AutomationProperties.Name="Edit password entry">
+                                <Button
+                                    Command="{Binding DataContext.EditUserPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}"
+                                    Width="40"
+                                    Height="40"
+                                    AutomationProperties.Name="Edit password entry">
                                     <TextBlock Text="✏️" FontSize="16" HorizontalAlignment="Center"
                                                VerticalAlignment="Center" />
                                     <ToolTip.Tip>Edit (Ctrl+E)</ToolTip.Tip>
                                 </Button>
 
-                                <Button Classes="icon-button"
-                                        Command="{Binding DataContext.DeleteUserPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                        CommandParameter="{Binding}"
-                                        Width="40"
-                                        Height="40"
-                                        AutomationProperties.Name="Delete password entry">
+                                <Button
+                                    Command="{Binding DataContext.DeleteUserPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}"
+                                    Width="40"
+                                    Height="40"
+                                    AutomationProperties.Name="Delete password entry">
                                     <TextBlock Text="🗑️" FontSize="16" HorizontalAlignment="Center"
                                                VerticalAlignment="Center" />
                                     <ToolTip.Tip>Delete (Delete)</ToolTip.Tip>

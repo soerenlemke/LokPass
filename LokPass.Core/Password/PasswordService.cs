@@ -1,3 +1,4 @@
+using LokPass.Core.Password.Hashing;
 using LokPass.Core.Password.Repositories;
 
 namespace LokPass.Core.Password;

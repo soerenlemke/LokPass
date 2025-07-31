@@ -5,6 +5,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using LokPass.Core.Password;
+using LokPass.Core.Password.Hashing;
 using LokPass.Core.Password.Repositories;
 using LokPass.Desktop.ViewModels;
 using LokPass.Desktop.Views;

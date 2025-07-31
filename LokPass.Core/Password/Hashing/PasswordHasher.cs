@@ -1,12 +1,13 @@
 using System.Security.Cryptography;
+using System.Text;
 using Konscious.Security.Cryptography;
 
-namespace LokPass.Core.Password;
+namespace LokPass.Core.Password.Hashing;
 
 public class PasswordHasher(int saltSize = 16, int memorySize = 65536, int iterations = 3, int degreeOfParallelism = 1)
-{ 
+{
     /// <summary>
-    /// Returns the used salt and the hashed password as a string, divided by a colon.
+    ///     Returns the used salt and the hashed password as a string, divided by a colon.
     /// </summary>
     /// <param name="password">the password as a string</param>
     /// <returns></returns>
@@ -15,7 +16,7 @@ public class PasswordHasher(int saltSize = 16, int memorySize = 65536, int itera
         var salt = new byte[saltSize];
         RandomNumberGenerator.Fill(salt);
 
-        using var argon2 = new Argon2id(System.Text.Encoding.UTF8.GetBytes(password))
+        using var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password))
         {
             Salt = salt,
             DegreeOfParallelism = degreeOfParallelism,
@@ -29,14 +30,14 @@ public class PasswordHasher(int saltSize = 16, int memorySize = 65536, int itera
     }
 
     /// <summary>
-    /// Returns true if the given password matches the hashed password
+    ///     Returns true if the given password matches the hashed password
     /// </summary>
     /// <param name="password"></param>
     /// <param name="hashedPassword"></param>
     /// <returns></returns>
     public async Task<bool> IsValidPasswordAsync(string password, HashedPassword hashedPassword)
     {
-        using var argon2 = new Argon2id(System.Text.Encoding.UTF8.GetBytes(password))
+        using var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password))
         {
             Salt = hashedPassword.Salt,
             DegreeOfParallelism = degreeOfParallelism,

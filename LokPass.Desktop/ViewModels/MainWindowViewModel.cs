@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LokPass.Core.Password;
+using LokPass.Core.Password.Hashing;
 using LokPass.Core.Password.Repositories;
 using Microsoft.Extensions.Logging;
 

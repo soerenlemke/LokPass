@@ -1,3 +1,5 @@
+using LokPass.Core.Password.Hashing;
+
 namespace LokPass.Core.Password;
 
 public class UserPassword(

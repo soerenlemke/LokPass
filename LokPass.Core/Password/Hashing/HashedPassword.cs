@@ -1,4 +1,4 @@
-namespace LokPass.Core.Password;
+namespace LokPass.Core.Password.Hashing;
 
 public readonly struct HashedPassword(byte[] password, byte[] salt)
 {

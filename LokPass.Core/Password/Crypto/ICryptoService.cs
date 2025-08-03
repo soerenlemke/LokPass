@@ -3,6 +3,15 @@ namespace LokPass.Core.Password.Crypto;
 public interface ICryptoService
 {
     byte[] GenerateUserSalt();
-    Task<EncryptedPassword> EncryptPasswordAsync(string password, string masterKey, byte[] userSalt);
-    Task<string> DecryptPasswordAsync(EncryptedPassword encryptedPassword, string masterKey, byte[] userSalt);
+    byte[] GenerateUserMasterKey(string password);
+
+    Task<EncryptedPassword> EncryptPasswordAsync(
+        string password,
+        UserConfiguration userConfiguration
+    );
+
+    Task<string> DecryptPasswordAsync(
+        EncryptedPassword encryptedPassword,
+        UserConfiguration userConfiguration
+    );
 }

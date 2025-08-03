@@ -27,7 +27,6 @@ public class InMemoryPasswordRepository : IPasswordRepository
         if (!_passwords.TryGetValue(password.Id, out var existingPassword)) return Task.CompletedTask;
         if (!HasChanges(existingPassword, password)) return Task.CompletedTask;
 
-        password.UpdatedAt = DateTime.UtcNow;
         _passwords.TryUpdate(password.Id, password, existingPassword);
 
         return Task.CompletedTask;
@@ -42,7 +41,6 @@ public class InMemoryPasswordRepository : IPasswordRepository
     {
         return existing.Title != updated.Title ||
                existing.Username != updated.Username ||
-               existing.PasswordHash != updated.PasswordHash ||
-               existing.Salt != updated.Salt;
+               existing.EncryptedPassword != updated.EncryptedPassword;
     }
 }

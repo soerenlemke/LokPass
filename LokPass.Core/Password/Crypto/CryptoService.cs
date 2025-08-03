@@ -15,38 +15,20 @@ public class CryptoService : ICryptoService
         return RandomNumberGenerator.GetBytes(SaltSize);
     }
 
-    public async Task<string> DecryptPasswordAsync(
-        EncryptedPassword encryptedPassword,
-        string masterKey,
-        byte[] userSalt
-    )
+    public byte[] GenerateUserMasterKey(string password)
     {
-        ArgumentNullException.ThrowIfNull(encryptedPassword);
-        ArgumentException.ThrowIfNullOrEmpty(masterKey);
-
-        var key = DeriveKey(masterKey, userSalt);
-
-        using var aes = Aes.Create();
-        aes.Key = key;
-        aes.IV = encryptedPassword.Iv;
-
-        using var decryptor = aes.CreateDecryptor();
-        var decryptedBytes = await Task.Run(() => decryptor.TransformFinalBlock(
-            encryptedPassword.Password, 0, encryptedPassword.Password.Length));
-
-        return Encoding.UTF8.GetString(decryptedBytes);
+        throw new NotImplementedException();
     }
 
     public async Task<EncryptedPassword> EncryptPasswordAsync(
         string password,
-        string masterKey,
-        byte[] userSalt
+        UserConfiguration userConfiguration
     )
     {
         ArgumentException.ThrowIfNullOrEmpty(password);
-        ArgumentException.ThrowIfNullOrEmpty(masterKey);
+        ArgumentNullException.ThrowIfNull(userConfiguration);
 
-        var key = DeriveKey(masterKey, userSalt);
+        var key = DeriveKey(userConfiguration.MasterKey, userConfiguration.Salt);
         var iv = RandomNumberGenerator.GetBytes(IvSize / 8);
 
         using var aes = Aes.Create();
@@ -61,10 +43,31 @@ public class CryptoService : ICryptoService
         return new EncryptedPassword(encryptedBytes, iv);
     }
 
-    private static byte[] DeriveKey(string masterKey, byte[] userSalt)
+    public async Task<string> DecryptPasswordAsync(
+        EncryptedPassword encryptedPassword,
+        UserConfiguration userConfiguration
+    )
+    {
+        ArgumentNullException.ThrowIfNull(encryptedPassword);
+        ArgumentNullException.ThrowIfNull(userConfiguration);
+
+        var key = DeriveKey(userConfiguration.MasterKey, userConfiguration.Salt);
+
+        using var aes = Aes.Create();
+        aes.Key = key;
+        aes.IV = encryptedPassword.Iv;
+
+        using var decryptor = aes.CreateDecryptor();
+        var decryptedBytes = await Task.Run(() => decryptor.TransformFinalBlock(
+            encryptedPassword.Password, 0, encryptedPassword.Password.Length));
+
+        return Encoding.UTF8.GetString(decryptedBytes);
+    }
+
+    private static byte[] DeriveKey(byte[] masterKey, byte[] userSalt)
     {
         using var pbkdf2 = new Rfc2898DeriveBytes(
-            Encoding.UTF8.GetBytes(masterKey),
+            masterKey,
             userSalt,
             Iterations,
             HashAlgorithmName.SHA256);

@@ -3,36 +3,34 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LokPass.Core.Password;
 using LokPass.Core.Password.Crypto;
-using LokPass.Core.Password.Hashing;
 using LokPass.Core.Password.Repositories;
+using LokPass.Core.TestData;
 using Microsoft.Extensions.Logging;
 
 namespace LokPass.Desktop.ViewModels;
-
 public partial class MainWindowViewModel : ViewModelBase
 {
-    // TODO: Get user configuration for passing down
-    
-    private readonly ILogger<MainWindowViewModel> _logger;
-    private readonly IPasswordService _passwordService;
-    
-    [ObservableProperty] private ObservableCollection<UserPassword> _filteredPasswords = [];
+    readonly ILogger<MainWindowViewModel> _logger;
+    readonly IPasswordService _passwordService;
+    [ObservableProperty] ObservableCollection<UserPassword> _filteredPasswords = [];
 
-    [ObservableProperty] private string _newPassword = "";
-    [ObservableProperty] private string _newTitle = "";
-    [ObservableProperty] private string _newUsername = "";
-    [ObservableProperty] private string _searchText = "";
-    [ObservableProperty] private ObservableCollection<UserPassword> _userPasswords = [];
+    [ObservableProperty] string _newPassword = "";
+    [ObservableProperty] string _newTitle = "";
+    [ObservableProperty] string _newUsername = "";
+    [ObservableProperty] string _searchText = "";
     [ObservableProperty] UserConfiguration _userConfiguration;
+    [ObservableProperty] ObservableCollection<UserPassword> _userPasswords = [];
 
     // Parameterless constructor for designer
-    public MainWindowViewModel(UserConfiguration userConfiguration)
+    public MainWindowViewModel()
     {
-        _userConfiguration = userConfiguration;
+        _userConfiguration = TestDataService.CreateTestUserConfiguration();
+
         // For designer - use InMemory Repository
         var repository = new InMemoryPasswordRepository();
         var crypto = new CryptoService();
@@ -45,7 +43,8 @@ public partial class MainWindowViewModel : ViewModelBase
         FilteredPasswords = [];
     }
 
-    public MainWindowViewModel(ILogger<MainWindowViewModel> logger, IPasswordService passwordService, UserConfiguration userConfiguration)
+    public MainWindowViewModel(ILogger<MainWindowViewModel> logger, IPasswordService passwordService,
+        UserConfiguration userConfiguration)
     {
         _logger = logger;
         _passwordService = passwordService;
@@ -60,7 +59,7 @@ public partial class MainWindowViewModel : ViewModelBase
         FilterPasswords();
     }
 
-    private void FilterPasswords()
+    void FilterPasswords()
     {
         if (string.IsNullOrEmpty(SearchText))
         {
@@ -75,7 +74,7 @@ public partial class MainWindowViewModel : ViewModelBase
         FilteredPasswords = new ObservableCollection<UserPassword>(filtered);
     }
 
-    private async Task LoadPasswordsAsync()
+    async Task LoadPasswordsAsync()
     {
         try
         {
@@ -95,7 +94,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task AddUserPassword()
+    async Task AddUserPassword()
     {
         if (string.IsNullOrWhiteSpace(NewTitle)) return;
         if (string.IsNullOrWhiteSpace(NewUsername)) return;
@@ -119,7 +118,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private async Task RefreshPasswordsAsync()
+    async Task RefreshPasswordsAsync()
     {
         try
         {
@@ -136,7 +135,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     ///     Intelligently update the ObservableCollection without reloading everything
     /// </summary>
-    private void UpdateObservableCollection(IEnumerable<UserPassword> newPasswords)
+    void UpdateObservableCollection(IEnumerable<UserPassword> newPasswords)
     {
         var newPasswordsList = newPasswords.ToList();
 
@@ -165,7 +164,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void SettingsButton()
+    void SettingsButton()
     {
         _logger.LogInformation("ClickSettingsButton");
     }
@@ -173,7 +172,7 @@ public partial class MainWindowViewModel : ViewModelBase
     // commands per password entry
 
     [RelayCommand]
-    private void ShowPassword(UserPassword userPassword)
+    void ShowPassword(UserPassword userPassword)
     {
         try
         {
@@ -187,7 +186,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void CopyUsername(UserPassword userPassword)
+    void CopyUsername(UserPassword userPassword)
     {
         try
         {
@@ -202,7 +201,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task CopyPassword(UserPassword userPassword)
+    async Task CopyPassword(UserPassword userPassword)
     {
         try
         {
@@ -216,7 +215,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task EditUserPassword(UserPassword userPassword)
+    async Task EditUserPassword(UserPassword userPassword)
     {
         try
         {
@@ -242,7 +241,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task DeleteUserPassword(UserPassword userPassword)
+    async Task DeleteUserPassword(UserPassword userPassword)
     {
         try
         {

@@ -7,6 +7,7 @@ using Avalonia.Markup.Xaml;
 using LokPass.Core.Password;
 using LokPass.Core.Password.Crypto;
 using LokPass.Core.Password.Repositories;
+using LokPass.Core.TestData;
 using LokPass.Desktop.ViewModels;
 using LokPass.Desktop.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,7 +55,7 @@ public class App : Application
 
             var logger = Services.GetRequiredService<ILogger<MainWindowViewModel>>();
             var passwordService = Services.GetRequiredService<IPasswordService>();
-            var userConfiguration = CreateTestUserConfiguration();
+            var userConfiguration = TestDataService.CreateTestUserConfiguration();
 
             desktop.MainWindow = new MainWindow
             {
@@ -65,30 +66,6 @@ public class App : Application
         base.OnFrameworkInitializationCompleted();
     }
     
-    /// <summary>
-    /// Erstellt eine Test-UserConfiguration mit Dummy-Werten für die Entwicklung.
-    /// TODO: Ersetzen Sie dies durch einen echten Anmeldeprozess, bei dem der Benutzer seinen Master-Key eingibt.
-    /// </summary>
-    private static UserConfiguration CreateTestUserConfiguration()
-    {
-        // Test-Werte - NICHT in Produktion verwenden!
-        var testMasterKey = System.Text.Encoding.UTF8.GetBytes("test-master-key-32-chars-long!!");
-        var testSalt = System.Text.Encoding.UTF8.GetBytes("test-salt-16char");
-
-        if (testMasterKey.Length != 32)
-        {
-            Array.Resize(ref testMasterKey, 32);
-        }
-        
-        if (testSalt.Length != 16)
-        {
-            Array.Resize(ref testSalt, 16);
-        }
-
-        return new UserConfiguration(testMasterKey, testSalt);
-    }
-
-
     private void ConfigurePasswordServices(IServiceCollection services)
     {
         // Register core password services

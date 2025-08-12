@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LokPass.Core.Password;
+using LokPass.Core.Password.Crypto;
 using LokPass.Core.Password.Hashing;
 using LokPass.Core.Password.Repositories;
 using Microsoft.Extensions.Logging;
@@ -14,8 +15,11 @@ namespace LokPass.Desktop.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    // TODO: Get user configuration for passing down
+    
     private readonly ILogger<MainWindowViewModel> _logger;
     private readonly IPasswordService _passwordService;
+    
     [ObservableProperty] private ObservableCollection<UserPassword> _filteredPasswords = [];
 
     [ObservableProperty] private string _newPassword = "";
@@ -23,15 +27,17 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _newUsername = "";
     [ObservableProperty] private string _searchText = "";
     [ObservableProperty] private ObservableCollection<UserPassword> _userPasswords = [];
+    [ObservableProperty] UserConfiguration _userConfiguration;
 
     // Parameterless constructor for designer
-    public MainWindowViewModel()
+    public MainWindowViewModel(UserConfiguration userConfiguration)
     {
+        _userConfiguration = userConfiguration;
         // For designer - use InMemory Repository
         var repository = new InMemoryPasswordRepository();
-        var hasher = new PasswordHasher();
-        _passwordService = new PasswordService(repository, hasher);
-        _logger = null!; // Designer doesn't need logger
+        var crypto = new CryptoService();
+        _passwordService = new PasswordService(repository, crypto);
+        _logger = null!;
 
         // Dummy data for designer
         _ = LoadPasswordsAsync();
@@ -39,10 +45,11 @@ public partial class MainWindowViewModel : ViewModelBase
         FilteredPasswords = [];
     }
 
-    public MainWindowViewModel(ILogger<MainWindowViewModel> logger, IPasswordService passwordService)
+    public MainWindowViewModel(ILogger<MainWindowViewModel> logger, IPasswordService passwordService, UserConfiguration userConfiguration)
     {
         _logger = logger;
         _passwordService = passwordService;
+        _userConfiguration = userConfiguration;
         _logger.LogInformation("MainWindowViewModel constructed!");
 
         _ = LoadPasswordsAsync();
@@ -96,7 +103,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
-            await _passwordService.AddNewPasswordAsync(NewTitle, NewUsername, NewPassword);
+            await _passwordService.AddNewPasswordAsync(UserConfiguration, NewTitle, NewUsername, NewPassword);
 
             await RefreshPasswordsAsync();
 
@@ -218,6 +225,7 @@ public partial class MainWindowViewModel : ViewModelBase
             var newUsername = userPassword.Username;
 
             await _passwordService.EditPasswordAsync(
+                UserConfiguration,
                 userPassword.Id,
                 newTitle,
                 newUsername

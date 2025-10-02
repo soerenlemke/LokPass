@@ -55,11 +55,12 @@ public class App : Application
 
             var logger = Services.GetRequiredService<ILogger<MainWindowViewModel>>();
             var passwordService = Services.GetRequiredService<IPasswordService>();
+            var cryptoService = Services.GetRequiredService<ICryptoService>();
             var userConfiguration = TestDataService.CreateTestUserConfiguration();
 
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(logger, passwordService, userConfiguration),
+                DataContext = new MainWindowViewModel(logger, passwordService, cryptoService, userConfiguration),
             };
         }
 

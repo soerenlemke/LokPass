@@ -44,6 +44,19 @@ To be defined – possible options include:
 
 ---
 
+## Roadmap
+
+### v0.1
+
+- [x] Basic password storage in memory
+- [x] Basic UI
+- [x] show password in UI
+- [ ] copy password / username to clipboard
+- [ ] edit password / username
+- [ ] delete password / username
+
+---
+
 ## License
 
 This project is licensed under the **MIT License**.

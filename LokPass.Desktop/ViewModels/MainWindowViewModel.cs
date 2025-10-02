@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LokPass.Core.Password;
@@ -17,7 +16,8 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     readonly ILogger<MainWindowViewModel> _logger;
     readonly IPasswordService _passwordService;
-    [ObservableProperty] ObservableCollection<UserPassword> _filteredPasswords = [];
+    readonly ICryptoService _cryptoService;
+    [ObservableProperty] private ObservableCollection<UserPassword> _filteredPasswords = [];
 
     [ObservableProperty] string _newPassword = "";
     [ObservableProperty] string _newTitle = "";
@@ -37,17 +37,18 @@ public partial class MainWindowViewModel : ViewModelBase
         _passwordService = new PasswordService(repository, crypto);
         _logger = null!;
 
-        // Dummy data for designer
-        _ = LoadPasswordsAsync();
-
         FilteredPasswords = [];
     }
 
-    public MainWindowViewModel(ILogger<MainWindowViewModel> logger, IPasswordService passwordService,
+    public MainWindowViewModel(
+        ILogger<MainWindowViewModel> logger, 
+        IPasswordService passwordService,
+        ICryptoService cryptoService,
         UserConfiguration userConfiguration)
     {
         _logger = logger;
         _passwordService = passwordService;
+        _cryptoService = cryptoService;
         _userConfiguration = userConfiguration;
         _logger.LogInformation("MainWindowViewModel constructed!");
 
@@ -170,17 +171,28 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     // commands per password entry
-
+    
     [RelayCommand]
-    void ShowPassword(UserPassword userPassword)
+    async Task ShowPassword(UserPassword userPassword)
     {
         try
         {
-            // show decrypted password
-            _logger.LogInformation("Show password requested for: {userPasswordTitle}", userPassword.Title);
+            if (userPassword.DecryptedPassword == "*****")
+            {
+                userPassword.DecryptedPassword = await _cryptoService.DecryptPasswordAsync(userPassword.EncryptedPassword, UserConfiguration);
+                await RefreshPasswordsAsync();
+                _logger.LogInformation("Show password requested for: {userPasswordTitle}", userPassword.Title);
+            }
+            else
+            {
+                userPassword.DecryptedPassword = "*****";
+                await RefreshPasswordsAsync();
+                _logger.LogInformation("Hide password requested for: {userPasswordTitle}", userPassword.Title);
+            }
         }
         catch (Exception e)
         {
+            userPassword.DecryptedPassword = "*****";
             _logger.LogError(e, "Failed to show password");
         }
     }

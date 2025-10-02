@@ -2,16 +2,76 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="LokPass.Desktop.App"
              xmlns:local="using:LokPass.Desktop"
-             RequestedThemeVariant="Light"
-             xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             RequestedThemeVariant="Dark"
+             xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
+             xmlns:suki="https://github.com/kikipoulet/SukiUI">
 
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
-  
+
      <Application.Styles>
-         <sukiUi:SukiTheme ThemeColor="Blue"/>
+         <sukiUi:SukiTheme ThemeColor="Green"/>
+
+         <!-- Terminal/Hacker Theme -->
+         <Style Selector="Window">
+             <Setter Property="Background" Value="#0a0e0f"/>
+         </Style>
+
+         <Style Selector="TextBlock">
+             <Setter Property="FontFamily" Value="Consolas,Monaco,monospace"/>
+             <Setter Property="Foreground" Value="#00ff41"/>
+         </Style>
+
+         <Style Selector="TextBox">
+             <Setter Property="FontFamily" Value="Consolas,Monaco,monospace"/>
+             <Setter Property="Background" Value="#0d1117"/>
+             <Setter Property="Foreground" Value="#00ff41"/>
+             <Setter Property="BorderBrush" Value="#00ff41"/>
+             <Setter Property="BorderThickness" Value="1"/>
+             <Setter Property="CornerRadius" Value="0"/>
+         </Style>
+
+         <Style Selector="TextBox:focus">
+             <Setter Property="BorderBrush" Value="#00ff41"/>
+             <Setter Property="BorderThickness" Value="2"/>
+         </Style>
+
+         <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+             <Setter Property="Background" Value="#161b22"/>
+             <Setter Property="BorderBrush" Value="#00ff41"/>
+         </Style>
+
+         <Style Selector="Button">
+             <Setter Property="FontFamily" Value="Consolas,Monaco,monospace"/>
+             <Setter Property="Background" Value="#0d1117"/>
+             <Setter Property="Foreground" Value="#00ff41"/>
+             <Setter Property="BorderBrush" Value="#00ff41"/>
+             <Setter Property="BorderThickness" Value="1"/>
+             <Setter Property="CornerRadius" Value="0"/>
+             <Setter Property="Cursor" Value="Hand"/>
+         </Style>
+
+         <Style Selector="Button:pointerover">
+             <Setter Property="Background" Value="#161b22"/>
+             <Setter Property="BorderBrush" Value="#39ff14"/>
+         </Style>
+
+         <Style Selector="Button:pressed">
+             <Setter Property="Background" Value="#00ff41"/>
+             <Setter Property="Foreground" Value="#0a0e0f"/>
+         </Style>
+
+         <Style Selector="ListBox">
+             <Setter Property="Background" Value="Transparent"/>
+         </Style>
+
+         <Style Selector="suki|GlassCard">
+             <Setter Property="Background" Value="#0d1117"/>
+             <Setter Property="BorderBrush" Value="#00ff41"/>
+             <Setter Property="BorderThickness" Value="1"/>
+             <Setter Property="CornerRadius" Value="0"/>
+         </Style>
      </Application.Styles>
-             
+
 </Application>

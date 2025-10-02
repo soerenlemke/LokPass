@@ -13,8 +13,9 @@
     x:Class="LokPass.Desktop.Views.MainWindow"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
-    Title="LokPass - Password Manager"
-    IsMenuVisible="True">
+    Title="[ LokPass v1.0 - SECURE PASSWORD VAULT ]"
+    IsMenuVisible="True"
+    Background="#0a0e0f">
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
@@ -35,15 +36,15 @@
         <!-- Add New Password Section -->
         <suki:GlassCard Grid.Row="0" Margin="0,0,0,20">
             <StackPanel>
-                <TextBlock Text="Add New Password"
-                           FontSize="16"
+                <TextBlock Text="[+] ADD NEW ENTRY"
+                           FontSize="12"
                            FontWeight="Bold"
                            Margin="0,0,0,10" />
 
                 <Grid ColumnDefinitions="2*,2*,2*,Auto" Height="40">
                     <TextBox Grid.Column="0"
                              Margin="0,0,10,0"
-                             Watermark="Title (e.g. Gmail, Facebook)"
+                             Watermark="> title"
                              Text="{Binding NewTitle, Mode=TwoWay}"
                              VerticalContentAlignment="Center"
                              Classes.error="{Binding NewTitle, Converter={x:Static converters:StringConverters.IsNullOrEmpty}}"
@@ -54,7 +55,7 @@
 
                     <TextBox Grid.Column="1"
                              Margin="0,0,10,0"
-                             Watermark="Username/Email"
+                             Watermark="> user"
                              Text="{Binding NewUsername, Mode=TwoWay}"
                              VerticalContentAlignment="Center"
                              Classes.error="{Binding NewUsername, Converter={x:Static converters:StringConverters.IsNullOrEmpty}}"
@@ -65,10 +66,10 @@
 
                     <TextBox Grid.Column="2"
                              Margin="0,0,10,0"
-                             Watermark="Password"
+                             Watermark="> pass"
                              Text="{Binding NewPassword, Mode=TwoWay}"
-                             PasswordChar="•"
-                             RevealPassword="True"
+                             PasswordChar="*"
+                             RevealPassword="False"
                              VerticalContentAlignment="Center"
                              TabIndex="2"
                              Classes.error="{Binding NewPassword, Converter={x:Static converters:StringConverters.IsNullOrEmpty}}"
@@ -78,10 +79,9 @@
 
                     <Button Grid.Column="3"
                             Command="{Binding AddUserPasswordCommand}"
-                            Content="Add"
-                            Padding="15,0"
-                            Height="40"
-                            TabIndex="3"
+                            FontSize="12"
+                            Content="[ADD]"
+                            Padding="10"
                             AutomationProperties.Name="Add password">
                         <ToolTip.Tip>Adds the new password to the list (Ctrl+Enter)</ToolTip.Tip>
                     </Button>
@@ -93,7 +93,7 @@
         <suki:GlassCard Grid.Row="1" Margin="0,0,0,20">
             <Grid ColumnDefinitions="*,Auto">
                 <TextBox Grid.Column="0"
-                         Watermark="🔍 Search passwords..."
+                         Watermark="> search"
                          Text="{Binding SearchText, Mode=TwoWay}"
                          VerticalContentAlignment="Center"
                          Height="35"
@@ -103,10 +103,11 @@
                 </TextBox>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
-                    <TextBlock Text="Count: " VerticalAlignment="Center" />
+                    <TextBlock Text="[" VerticalAlignment="Center" />
                     <TextBlock Text="{Binding FilteredPasswords.Count}"
                                FontWeight="Bold"
                                VerticalAlignment="Center" />
+                    <TextBlock Text=" entries]" VerticalAlignment="Center" />
                 </StackPanel>
             </Grid>
         </suki:GlassCard>
@@ -123,26 +124,30 @@
 
                             <!-- Content -->
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding Title}"
-                                           FontSize="16"
+                                <TextBlock FontSize="13"
                                            FontWeight="Bold"
-                                           Margin="0,0,0,5" />
+                                           Margin="0,0,0,5">
+                                    <Run Text="[" />
+                                    <Run Text="{Binding Title}" />
+                                    <Run Text="]" />
+                                </TextBlock>
 
-                                <TextBlock Text="{Binding Username}"
-                                           FontSize="14"
-                                           Foreground="{DynamicResource TextControlForeground}"
-                                           Opacity="0.7"
-                                           Margin="0,0,0,5" />
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                    <TextBlock Text="user: "
+                                               FontSize="11"
+                                               Opacity="0.7" />
+                                    <TextBlock Text="{Binding Username}"
+                                               FontSize="11"
+                                               Opacity="0.9" />
+                                </StackPanel>
 
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Password: "
-                                               FontSize="12"
-                                               Foreground="{DynamicResource TextControlForeground}"
-                                               Opacity="0.6" />
-                                    <TextBlock Text="••••••••"
-                                               FontSize="12"
-                                               Foreground="{DynamicResource TextControlForeground}"
-                                               Opacity="0.6" />
+                                    <TextBlock Text="pass: "
+                                               FontSize="11"
+                                               Opacity="0.7" />
+                                    <TextBlock Text="{Binding DecryptedPassword}"
+                                               FontSize="11"
+                                               Opacity="0.7" />
                                 </StackPanel>
                             </StackPanel>
 
@@ -150,60 +155,60 @@
                             <StackPanel Grid.Column="2"
                                         Orientation="Horizontal"
                                         VerticalAlignment="Center"
-                                        Spacing="10">
+                                        Spacing="5">
 
                                 <Button
                                     Command="{Binding DataContext.ShowPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding}"
-                                    Width="40"
+                                    Width="80"
                                     Height="40"
+                                    FontSize="8"
                                     AutomationProperties.Name="Show password">
-                                    <TextBlock Text="👁️" FontSize="16" HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="[VIEW]" />
                                     <ToolTip.Tip>Show password</ToolTip.Tip>
                                 </Button>
 
                                 <Button
                                     Command="{Binding DataContext.CopyUsernameCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding}"
-                                    Width="40"
+                                    Width="80"
                                     Height="40"
+                                    FontSize="8"
                                     AutomationProperties.Name="Copy username">
-                                    <TextBlock Text="📋" FontSize="16" HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="[USR]" />
                                     <ToolTip.Tip>Copy username (Ctrl+C)</ToolTip.Tip>
                                 </Button>
 
                                 <Button
                                     Command="{Binding DataContext.CopyPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding}"
-                                    Width="40"
+                                    Width="80"
                                     Height="40"
+                                    FontSize="8"
                                     AutomationProperties.Name="Copy password">
-                                    <TextBlock Text="🔑" FontSize="16" HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="[PWD]" />
                                     <ToolTip.Tip>Copy password (Ctrl+P)</ToolTip.Tip>
                                 </Button>
 
                                 <Button
                                     Command="{Binding DataContext.EditUserPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding}"
-                                    Width="40"
+                                    Width="80"
                                     Height="40"
+                                    FontSize="8"
                                     AutomationProperties.Name="Edit password entry">
-                                    <TextBlock Text="✏️" FontSize="16" HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="[EDIT]" />
                                     <ToolTip.Tip>Edit (Ctrl+E)</ToolTip.Tip>
                                 </Button>
 
                                 <Button
                                     Command="{Binding DataContext.DeleteUserPasswordCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding}"
-                                    Width="40"
+                                    Width="80"
                                     Height="40"
+                                    FontSize="8"
                                     AutomationProperties.Name="Delete password entry">
-                                    <TextBlock Text="🗑️" FontSize="16" HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="[DEL]" />
                                     <ToolTip.Tip>Delete (Delete)</ToolTip.Tip>
                                 </Button>
                             </StackPanel>

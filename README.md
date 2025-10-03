@@ -1,4 +1,4 @@
-# LokPass – Password Manager
+# LokPass – cross platform password manager
 
 ![img.png](Screenshots/MainView.png)
 

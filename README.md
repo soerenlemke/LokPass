@@ -48,6 +48,11 @@ To be defined – possible options include:
 - [ ] save passwords to file
 - [ ] load passwords from file
 
+### v0.0.3
+
+- [ ] user password input at startup for generating a user master key (needed for user configuration)
+- [ ] clear clipboard after time
+
 ---
 
 ## License

@@ -40,6 +40,7 @@ public partial class MainWindowViewModel : ViewModelBase
     // Parameterless constructor for designer
     public MainWindowViewModel()
     {
+        // TODO: create user configuration with GenerateUserMasterKey(string password) from CryptoService
         _userConfiguration = TestDataService.CreateTestUserConfiguration();
 
         // For designer - use InMemory Repository

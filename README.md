@@ -40,9 +40,14 @@ To be defined – possible options include:
 - [x] Basic password storage in memory
 - [x] Basic UI
 - [x] show password in UI
-- [ ] copy password / username to clipboard
-- [ ] edit password / username
+- [x] copy password / username to clipboard
 - [x] delete password / username
+
+### v0.0.2
+
+- [ ] edit password / username
+- [ ] save passwords to file
+- [ ] load passwords from file
 
 ---
 

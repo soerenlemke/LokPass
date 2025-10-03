@@ -58,15 +58,20 @@ public class App : Application
             var cryptoService = Services.GetRequiredService<ICryptoService>();
             var userConfiguration = TestDataService.CreateTestUserConfiguration();
 
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainWindowViewModel(logger, passwordService, cryptoService, userConfiguration),
-            };
+            var mainWindow = new MainWindow();
+            desktop.MainWindow = mainWindow;
+
+            mainWindow.DataContext = new MainWindowViewModel(
+                logger,
+                passwordService,
+                cryptoService,
+                userConfiguration,
+                mainWindow.Clipboard);
         }
 
         base.OnFrameworkInitializationCompleted();
     }
-    
+
     private void ConfigurePasswordServices(IServiceCollection services)
     {
         // Register core password services

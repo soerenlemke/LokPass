@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LokPass.Core.Password;
@@ -12,23 +13,29 @@ using LokPass.Core.TestData;
 using Microsoft.Extensions.Logging;
 
 namespace LokPass.Desktop.ViewModels;
+
 public partial class MainWindowViewModel : ViewModelBase
 {
-    readonly ILogger<MainWindowViewModel> _logger;
-    readonly IPasswordService _passwordService;
-    readonly ICryptoService _cryptoService;
+    private readonly IClipboard? _clipboard;
+    private readonly ICryptoService _cryptoService;
+    private readonly ILogger<MainWindowViewModel> _logger;
+    private readonly IPasswordService _passwordService;
+
     [ObservableProperty] private ObservableCollection<UserPassword> _filteredPasswords = [];
 
-    [ObservableProperty] string _newPassword = "";
-    [ObservableProperty] string _newTitle = "";
-    [ObservableProperty] string _newUsername = "";
-    [ObservableProperty] string _searchText = "";
-    [ObservableProperty] UserConfiguration _userConfiguration;
-    [ObservableProperty] ObservableCollection<UserPassword> _userPasswords = [];
+    [ObservableProperty] private string _newPassword = "";
+    [ObservableProperty] private string _newTitle = "";
+    [ObservableProperty] private string _newUsername = "";
+
+    [ObservableProperty] private string _popupMessage = "";
+    [ObservableProperty] private string _searchText = "";
+    [ObservableProperty] private UserConfiguration _userConfiguration;
+    [ObservableProperty] private ObservableCollection<UserPassword> _userPasswords = [];
 
     // Parameterless constructor for designer
-    public MainWindowViewModel()
+    public MainWindowViewModel(IClipboard clipboard)
     {
+        _clipboard = clipboard;
         _userConfiguration = TestDataService.CreateTestUserConfiguration();
 
         // For designer - use InMemory Repository
@@ -41,15 +48,24 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     public MainWindowViewModel(
-        ILogger<MainWindowViewModel> logger, 
+        ILogger<MainWindowViewModel> logger,
         IPasswordService passwordService,
         ICryptoService cryptoService,
-        UserConfiguration userConfiguration)
+        UserConfiguration userConfiguration,
+        IClipboard? clipboard)
     {
         _logger = logger;
         _passwordService = passwordService;
         _cryptoService = cryptoService;
         _userConfiguration = userConfiguration;
+        _clipboard = clipboard;
+
+        if (_clipboard is null)
+        {
+            PopupMessage = "⚠️ Clipboard is not available. Copy functions will not work.";
+            _logger.LogError("Clipboard is not available at application startup");
+        }
+
         _logger.LogInformation("MainWindowViewModel constructed!");
 
         _ = LoadPasswordsAsync();
@@ -60,7 +76,7 @@ public partial class MainWindowViewModel : ViewModelBase
         FilterPasswords();
     }
 
-    void FilterPasswords()
+    private void FilterPasswords()
     {
         if (string.IsNullOrEmpty(SearchText))
         {
@@ -75,7 +91,7 @@ public partial class MainWindowViewModel : ViewModelBase
         FilteredPasswords = new ObservableCollection<UserPassword>(filtered);
     }
 
-    async Task LoadPasswordsAsync()
+    private async Task LoadPasswordsAsync()
     {
         try
         {
@@ -95,7 +111,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    async Task AddUserPassword()
+    private async Task AddUserPassword()
     {
         if (string.IsNullOrWhiteSpace(NewTitle)) return;
         if (string.IsNullOrWhiteSpace(NewUsername)) return;
@@ -119,7 +135,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    async Task RefreshPasswordsAsync()
+    private async Task RefreshPasswordsAsync()
     {
         try
         {
@@ -136,7 +152,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     ///     Intelligently update the ObservableCollection without reloading everything
     /// </summary>
-    void UpdateObservableCollection(IEnumerable<UserPassword> newPasswords)
+    private void UpdateObservableCollection(IEnumerable<UserPassword> newPasswords)
     {
         var newPasswordsList = newPasswords.ToList();
 
@@ -165,21 +181,22 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    void SettingsButton()
+    private void SettingsButton()
     {
         _logger.LogInformation("ClickSettingsButton");
     }
 
-    // commands per password entry
-    
+    // PasswordListItem commands
+
     [RelayCommand]
-    async Task ShowPassword(UserPassword userPassword)
+    private async Task ShowPassword(UserPassword userPassword)
     {
         try
         {
             if (userPassword.DecryptedPassword == "*****")
             {
-                userPassword.DecryptedPassword = await _cryptoService.DecryptPasswordAsync(userPassword.EncryptedPassword, UserConfiguration);
+                userPassword.DecryptedPassword =
+                    await _cryptoService.DecryptPasswordAsync(userPassword.EncryptedPassword, UserConfiguration);
                 _logger.LogInformation("Show password requested for: {userPasswordTitle}", userPassword.Title);
             }
             else
@@ -187,7 +204,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 userPassword.DecryptedPassword = "*****";
                 _logger.LogInformation("Hide password requested for: {userPasswordTitle}", userPassword.Title);
             }
-            
+
             await RefreshPasswordsAsync();
         }
         catch (Exception e)
@@ -198,36 +215,65 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    void CopyUsername(UserPassword userPassword)
+    private async Task CopyUsername(UserPassword userPassword)
     {
         try
         {
-            // TODO: use clipboard
-            // System.Windows.Clipboard.SetText(userPassword.Username);
+            if (_clipboard is null)
+            {
+                PopupMessage = "⚠️ Clipboard is not available. Cannot copy username.";
+                _logger.LogWarning("Attempted to copy username but clipboard is not available");
+                return;
+            }
+
+            await _clipboard.SetTextAsync(userPassword.Username);
+            PopupMessage = "✓ Username copied to clipboard!";
             _logger.LogInformation("Copied username: {userPasswordUsername}", userPassword.Username);
+
+            // Clear success message after 3 seconds
+            _ = Task.Delay(3000).ContinueWith(_ => PopupMessage = "");
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Failed to copy username");
+            PopupMessage = "❌ Failed to copy username to clipboard.";
+            _logger.LogError(e, "Failed to copy username");
         }
     }
 
     [RelayCommand]
-    async Task CopyPassword(UserPassword userPassword)
+    private async Task CopyPassword(UserPassword userPassword)
     {
         try
         {
-            // todo: copy decrypted password to clipboard --> how to reset after a specific time?
-            _logger.LogInformation("Copy password requested for: {userPasswordTitle}", userPassword.Title);
+            if (_clipboard is null)
+            {
+                PopupMessage = "⚠️ Clipboard is not available. Cannot copy password.";
+                _logger.LogWarning("Attempted to copy password but clipboard is not available");
+                return;
+            }
+
+            var decryptedPassword = await _cryptoService.DecryptPasswordAsync(
+                userPassword.EncryptedPassword,
+                UserConfiguration);
+
+            await _clipboard.SetTextAsync(decryptedPassword);
+            PopupMessage = "✓ Password copied to clipboard!";
+            _logger.LogInformation("Copied password for: {userPasswordTitle}", userPassword.Title);
+
+            // Clear success message after 3 seconds
+            _ = Task.Delay(3000).ContinueWith(_ => PopupMessage = "");
+
+            // TODO: Clear clipboard after a specific time for security?
         }
         catch (Exception e)
         {
+            PopupMessage = "❌ Failed to copy password to clipboard.";
             _logger.LogError(e, "Failed to copy password");
         }
     }
 
     [RelayCommand]
-    async Task EditUserPassword(UserPassword userPassword)
+    private async Task EditUserPassword(UserPassword userPassword)
     {
         try
         {
@@ -253,7 +299,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    async Task DeleteUserPassword(UserPassword userPassword)
+    private async Task DeleteUserPassword(UserPassword userPassword)
     {
         try
         {

@@ -31,16 +31,19 @@
         </ContextMenu>
     </suki:SukiWindow.TitleBarContextMenu>
 
-    <Grid RowDefinitions="Auto,Auto,*" Margin="12">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="12">
+
+        <!-- Error/Success Message Banner -->
+        <components:MessageBanner Grid.Row="0" />
 
         <!-- create a new password -->
-        <components:NewPassword Grid.Row="0" />
+        <components:NewPassword Grid.Row="1" />
 
         <!-- search and filter bar -->
-        <components:SearchAndFilterBar Grid.Row="1" />
+        <components:SearchAndFilterBar Grid.Row="2" />
 
         <!-- password list -->
-        <components:PasswordList Grid.Row="2" />
+        <components:PasswordList Grid.Row="3" />
 
     </Grid>
 </suki:SukiWindow>

@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:suki="https://github.com/kikipoulet/SukiUI"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LokPass.Desktop.Views.Components.MessageBanner">
+
+    <suki:GlassCard IsVisible="{Binding PopupMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Background="#1a1f35"
+                    BorderBrush="#22c55e"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="12,8"
+                    Margin="0,0,0,12">
+        <suki:GlassCard.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.3" />
+            </Transitions>
+        </suki:GlassCard.Transitions>
+
+        <TextBlock Text="{Binding PopupMessage}"
+                   Foreground="#4ade80"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center" />
+    </suki:GlassCard>
+
+</UserControl>

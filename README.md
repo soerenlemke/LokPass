@@ -2,8 +2,6 @@
 
 ![img.png](Screenshots/MainView.png)
 
-**LokPass** is a cross-platform, password manager and a personal learning project.  
-
 ---
 
 ## Project Goals

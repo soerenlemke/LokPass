@@ -16,7 +16,9 @@ The goal of LokPass is to create an extensible application that:
 - Has an own password generator
 - Automatic Backups
 - Has portable builds with no installations needed
-- Can import from KeePass-Files (.kdbx)
+- Can import from other password managers:
+  - KeePass-Files (.kdbx)
+  - ...
 
 ## Frontend
 
@@ -40,7 +42,7 @@ To be defined – possible options include:
 - [x] show password in UI
 - [ ] copy password / username to clipboard
 - [ ] edit password / username
-- [ ] delete password / username
+- [x] delete password / username
 
 ---
 

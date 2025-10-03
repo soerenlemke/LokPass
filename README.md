@@ -44,7 +44,7 @@ To be defined – possible options include:
 
 ### v0.0.2
 
-- [ ] edit password / username
+- [x] edit password / username
 - [ ] save passwords to file
 - [ ] load passwords from file
 

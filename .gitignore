@@ -7,3 +7,10 @@ riderModule.iml
 # IDEs
 .idea
 *.DotSettings.user
+
+# Build outputs
+publish/
+*.zip
+
+# Release artifacts
+LokPass-v*.zip

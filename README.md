@@ -14,22 +14,9 @@ The goal of LokPass is to create an extensible application that:
 - Stores passwords using modern cryptographic standards
 - Is modular and flexible in how users interact with it (UI, CLI, API)
 - Has an own password generator
-- Can import from KeePass-Files (.kdbx)
 - Automatic Backups
-- Has a modern UI
 - Has portable builds with no installations needed
-
----
-
-## Backend (.NET)
-
-The backend is written in **.NET** and provides:
-
-- Password storage (e.g. AES-GCM encryption, Argon2 hashing)
-- Data persistence (planned: SQLite)
-- Local API endpoints (planned: REST or gRPC)
-
----
+- Can import from KeePass-Files (.kdbx)
 
 ## Frontend
 

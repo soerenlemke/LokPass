@@ -92,34 +92,10 @@
             </StackPanel>
         </suki:GlassCard>
 
-        <!-- Search and Filter Section -->
-        <suki:GlassCard Grid.Row="1" Margin="0,0,0,10">
-            <Grid ColumnDefinitions="*,Auto">
-                <TextBox Grid.Column="0"
-                         Watermark="🔍 Search"
-                         Text="{Binding SearchText, Mode=TwoWay}"
-                         VerticalContentAlignment="Center"
-                         Height="32"
-                         TabIndex="4"
-                         AutomationProperties.Name="Search passwords">
-                    <ToolTip.Tip>Search by title or username (Ctrl+F)</ToolTip.Tip>
-                </TextBox>
+        <!-- search and filter bar -->
+        <components:SearchAndFilterBarItem Grid.Row="1" />
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="12,0,0,0">
-                    <TextBlock Text="{Binding FilteredPasswords.Count}"
-                               FontWeight="SemiBold"
-                               FontSize="12"
-                               VerticalAlignment="Center" />
-                    <TextBlock Text=" entries"
-                               FontSize="12"
-                               Opacity="0.7"
-                               Margin="3,0,0,0"
-                               VerticalAlignment="Center" />
-                </StackPanel>
-            </Grid>
-        </suki:GlassCard>
-
-        <!-- Password List -->
+        <!-- password list -->
         <ScrollViewer Grid.Row="2">
             <ItemsControl ItemsSource="{Binding FilteredPasswords}"
                           Background="Transparent">

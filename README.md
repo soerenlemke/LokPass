@@ -37,6 +37,7 @@ To be defined – possible options include:
 
 ### v0.0.1
 
+- [x] add password
 - [x] Basic password storage in memory
 - [x] Basic UI
 - [x] show password in UI

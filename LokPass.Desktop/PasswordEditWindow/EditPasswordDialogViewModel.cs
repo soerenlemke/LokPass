@@ -75,7 +75,7 @@ public partial class EditPasswordDialogViewModel : ViewModelBase
     [RelayCommand]
     private void Cancel()
     {
-        CloseRequested?.Invoke(this, true);
+        CloseRequested?.Invoke(this, false);
     }
 
     [RelayCommand]

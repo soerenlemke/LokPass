@@ -14,9 +14,8 @@
     x:Class="LokPass.Desktop.Views.MainWindow"
     x:DataType="vm:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
-    Title="[ LokPass v1.0 - SECURE PASSWORD VAULT ]"
-    IsMenuVisible="True"
-    Background="#0a0e0f">
+    Title="LokPass v0.0.1"
+    IsMenuVisible="True">
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
@@ -37,15 +36,16 @@
         <!-- Add New Password Section -->
         <suki:GlassCard Grid.Row="0" Margin="0,0,0,20">
             <StackPanel>
-                <TextBlock Text="[+] ADD NEW ENTRY"
-                           FontSize="12"
-                           FontWeight="Bold"
-                           Margin="0,0,0,10" />
+                <TextBlock Text="✚ Add New Entry"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,12"
+                           Opacity="0.95" />
 
                 <Grid ColumnDefinitions="2*,2*,2*,Auto" Height="40">
                     <TextBox Grid.Column="0"
                              Margin="0,0,10,0"
-                             Watermark="> title"
+                             Watermark="Title"
                              Text="{Binding NewTitle, Mode=TwoWay}"
                              VerticalContentAlignment="Center"
                              Classes.error="{Binding NewTitle, Converter={x:Static converters:StringConverters.IsNullOrEmpty}}"
@@ -56,7 +56,7 @@
 
                     <TextBox Grid.Column="1"
                              Margin="0,0,10,0"
-                             Watermark="> user"
+                             Watermark="Username"
                              Text="{Binding NewUsername, Mode=TwoWay}"
                              VerticalContentAlignment="Center"
                              Classes.error="{Binding NewUsername, Converter={x:Static converters:StringConverters.IsNullOrEmpty}}"
@@ -67,9 +67,9 @@
 
                     <TextBox Grid.Column="2"
                              Margin="0,0,10,0"
-                             Watermark="> pass"
+                             Watermark="Password"
                              Text="{Binding NewPassword, Mode=TwoWay}"
-                             PasswordChar="*"
+                             PasswordChar="•"
                              RevealPassword="False"
                              VerticalContentAlignment="Center"
                              TabIndex="2"
@@ -81,8 +81,8 @@
                     <Button Grid.Column="3"
                             Command="{Binding AddUserPasswordCommand}"
                             FontSize="12"
-                            Content="[ADD]"
-                            Padding="10"
+                            Content="Add"
+                            Padding="20,10"
                             AutomationProperties.Name="Add password">
                         <ToolTip.Tip>Adds the new password to the list (Ctrl+Enter)</ToolTip.Tip>
                     </Button>
@@ -94,21 +94,25 @@
         <suki:GlassCard Grid.Row="1" Margin="0,0,0,20">
             <Grid ColumnDefinitions="*,Auto">
                 <TextBox Grid.Column="0"
-                         Watermark="> search"
+                         Watermark="🔍 Search"
                          Text="{Binding SearchText, Mode=TwoWay}"
                          VerticalContentAlignment="Center"
-                         Height="35"
+                         Height="38"
                          TabIndex="4"
                          AutomationProperties.Name="Search passwords">
                     <ToolTip.Tip>Search by title or username (Ctrl+F)</ToolTip.Tip>
                 </TextBox>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
-                    <TextBlock Text="[" VerticalAlignment="Center" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="15,0,0,0">
                     <TextBlock Text="{Binding FilteredPasswords.Count}"
-                               FontWeight="Bold"
+                               FontWeight="SemiBold"
+                               FontSize="13"
                                VerticalAlignment="Center" />
-                    <TextBlock Text=" entries]" VerticalAlignment="Center" />
+                    <TextBlock Text=" entries"
+                               FontSize="13"
+                               Opacity="0.7"
+                               Margin="4,0,0,0"
+                               VerticalAlignment="Center" />
                 </StackPanel>
             </Grid>
         </suki:GlassCard>

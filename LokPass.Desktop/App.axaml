@@ -7,71 +7,112 @@
              xmlns:suki="https://github.com/kikipoulet/SukiUI">
 
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <local:ViewLocator />
     </Application.DataTemplates>
 
-     <Application.Styles>
-         <sukiUi:SukiTheme ThemeColor="Green"/>
+    <Application.Styles>
+        <!-- SukiTheme FIRST - base theme -->
+        <sukiUi:SukiTheme ThemeColor="Green" />
 
-         <!-- Terminal/Hacker Theme -->
-         <Style Selector="Window">
-             <Setter Property="Background" Value="#0a0e0f"/>
-         </Style>
+        <!-- Custom overrides AFTER - these will override SukiUI defaults -->
+        <Style Selector="Window">
+            <Setter Property="Background" Value="#0a0e0f" />
+        </Style>
 
-         <Style Selector="TextBlock">
-             <Setter Property="FontFamily" Value="Consolas,Monaco,monospace"/>
-             <Setter Property="Foreground" Value="#00ff41"/>
-         </Style>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas,Monaco,monospace" />
+            <Setter Property="Foreground" Value="#4ade80" />
+        </Style>
 
-         <Style Selector="TextBox">
-             <Setter Property="FontFamily" Value="Consolas,Monaco,monospace"/>
-             <Setter Property="Background" Value="#0d1117"/>
-             <Setter Property="Foreground" Value="#00ff41"/>
-             <Setter Property="BorderBrush" Value="#00ff41"/>
-             <Setter Property="BorderThickness" Value="1"/>
-             <Setter Property="CornerRadius" Value="0"/>
-         </Style>
+        <Style Selector="TextBox">
+            <Setter Property="FontFamily" Value="Consolas,Monaco,monospace" />
+            <Setter Property="Background" Value="#111827" />
+            <Setter Property="Foreground" Value="#d1fae5" />
+            <Setter Property="BorderBrush" Value="#22c55e" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <ThicknessTransition Property="BorderThickness" Duration="0:0:0.15" />
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+                    <BrushTransition Property="Background" Duration="0:0:0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
 
-         <Style Selector="TextBox:focus">
-             <Setter Property="BorderBrush" Value="#00ff41"/>
-             <Setter Property="BorderThickness" Value="2"/>
-         </Style>
+        <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="#4ade80" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Background" Value="#1a1f35" />
+        </Style>
 
-         <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-             <Setter Property="Background" Value="#161b22"/>
-             <Setter Property="BorderBrush" Value="#00ff41"/>
-         </Style>
+        <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="#1a1f35" />
+            <Setter Property="BorderBrush" Value="#4ade80" />
+        </Style>
 
-         <Style Selector="Button">
-             <Setter Property="FontFamily" Value="Consolas,Monaco,monospace"/>
-             <Setter Property="Background" Value="#0d1117"/>
-             <Setter Property="Foreground" Value="#00ff41"/>
-             <Setter Property="BorderBrush" Value="#00ff41"/>
-             <Setter Property="BorderThickness" Value="1"/>
-             <Setter Property="CornerRadius" Value="0"/>
-             <Setter Property="Cursor" Value="Hand"/>
-         </Style>
+        <Style Selector="Button">
+            <Setter Property="FontFamily" Value="Consolas,Monaco,monospace" />
+            <Setter Property="Background" Value="#111827" />
+            <Setter Property="Foreground" Value="#4ade80" />
+            <Setter Property="BorderBrush" Value="#22c55e" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15" />
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+                    <BrushTransition Property="Foreground" Duration="0:0:0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
 
-         <Style Selector="Button:pointerover">
-             <Setter Property="Background" Value="#161b22"/>
-             <Setter Property="BorderBrush" Value="#39ff14"/>
-         </Style>
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="#1a1f35" />
+            <Setter Property="BorderBrush" Value="#4ade80" />
+            <Setter Property="Foreground" Value="#6ee7b7" />
+        </Style>
 
-         <Style Selector="Button:pressed">
-             <Setter Property="Background" Value="#00ff41"/>
-             <Setter Property="Foreground" Value="#0a0e0f"/>
-         </Style>
+        <Style Selector="Button:pressed">
+            <Setter Property="Background" Value="#22c55e" />
+            <Setter Property="Foreground" Value="#0a0e0f" />
+            <Setter Property="BorderBrush" Value="#22c55e" />
+        </Style>
 
-         <Style Selector="ListBox">
-             <Setter Property="Background" Value="Transparent"/>
-         </Style>
+        <!-- Fix for Button ContentPresenter alignment -->
+        <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
 
-         <Style Selector="suki|GlassCard">
-             <Setter Property="Background" Value="#0d1117"/>
-             <Setter Property="BorderBrush" Value="#00ff41"/>
-             <Setter Property="BorderThickness" Value="1"/>
-             <Setter Property="CornerRadius" Value="0"/>
-         </Style>
-     </Application.Styles>
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <Style Selector="suki|GlassCard">
+            <Setter Property="Background" Value="#11182799" />
+            <Setter Property="BorderBrush" Value="#22c55e66" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="suki|GlassCard:pointerover">
+            <Setter Property="BorderBrush" Value="#22c55e99" />
+        </Style>
+    </Application.Styles>
 
 </Application>

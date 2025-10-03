@@ -1,6 +1,6 @@
 # LokPass – Password Manager
 
-![img.png](LokPass.Desktop/Assets/MainScreenScreenshot.png)
+![img.png](Screenshots/MainView.png)
 
 **LokPass** is a cross-platform, password manager and a personal learning project.  
 
@@ -33,7 +33,7 @@ To be defined – possible options include:
 
 ## Roadmap
 
-### v0.1
+### v0.0.1
 
 - [x] Basic password storage in memory
 - [x] Basic UI

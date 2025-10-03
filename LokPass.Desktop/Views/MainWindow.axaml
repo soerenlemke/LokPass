@@ -118,15 +118,15 @@
         </suki:GlassCard>
 
         <!-- Password List -->
-        <ListBox Grid.Row="2"
-                 ItemsSource="{Binding FilteredPasswords}"
-                 Background="Transparent"
-                 BorderThickness="0">
-            <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="core:UserPassword">
-                    <components:PasswordListItem />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <ScrollViewer Grid.Row="2">
+            <ItemsControl ItemsSource="{Binding FilteredPasswords}"
+                          Background="Transparent">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="core:UserPassword">
+                        <components:PasswordListItem />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </suki:SukiWindow>

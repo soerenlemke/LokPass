@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace LokPass.Desktop.Views.Components;
 
-public partial class SearchAndFilterBarItem : UserControl
+public partial class NewPassword : UserControl
 {
-    public SearchAndFilterBarItem()
+    public NewPassword()
     {
         InitializeComponent();
     }

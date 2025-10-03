@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:suki="https://github.com/kikipoulet/SukiUI"
-    xmlns:core="clr-namespace:LokPass.Core.Password;assembly=LokPass.Core"
     xmlns:components="clr-namespace:LokPass.Desktop.Views.Components"
     mc:Ignorable="d"
     Height="600"
@@ -35,22 +34,13 @@
     <Grid RowDefinitions="Auto,Auto,*" Margin="12">
 
         <!-- create a new password -->
-        <components:NewPasswordItem Grid.Row="0" />
+        <components:NewPassword Grid.Row="0" />
 
         <!-- search and filter bar -->
-        <components:SearchAndFilterBarItem Grid.Row="1" />
+        <components:SearchAndFilterBar Grid.Row="1" />
 
         <!-- password list -->
-        <ScrollViewer Grid.Row="2">
-            <ItemsControl ItemsSource="{Binding FilteredPasswords}"
-                          Background="Transparent">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="core:UserPassword">
-                        <components:PasswordListItem />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        <components:PasswordList Grid.Row="2" />
 
     </Grid>
 </suki:SukiWindow>

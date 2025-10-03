@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace LokPass.Desktop.Views.Components;
 
-public partial class NewPasswordItem : UserControl
+public partial class PasswordList : UserControl
 {
-    public NewPasswordItem()
+    public PasswordList()
     {
         InitializeComponent();
     }

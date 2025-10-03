@@ -33,8 +33,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
         // For designer - use InMemory Repository
         var repository = new InMemoryPasswordRepository();
-        var crypto = new CryptoService();
-        _passwordService = new PasswordService(repository, crypto);
+        _cryptoService = new CryptoService();
+        _passwordService = new PasswordService(repository, _cryptoService);
         _logger = null!;
 
         FilteredPasswords = [];
@@ -180,15 +180,15 @@ public partial class MainWindowViewModel : ViewModelBase
             if (userPassword.DecryptedPassword == "*****")
             {
                 userPassword.DecryptedPassword = await _cryptoService.DecryptPasswordAsync(userPassword.EncryptedPassword, UserConfiguration);
-                await RefreshPasswordsAsync();
                 _logger.LogInformation("Show password requested for: {userPasswordTitle}", userPassword.Title);
             }
             else
             {
                 userPassword.DecryptedPassword = "*****";
-                await RefreshPasswordsAsync();
                 _logger.LogInformation("Hide password requested for: {userPasswordTitle}", userPassword.Title);
             }
+            
+            await RefreshPasswordsAsync();
         }
         catch (Exception e)
         {

@@ -4,7 +4,6 @@
     xmlns:vm="using:LokPass.Desktop.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:Avalonia.Data.Converters"
     xmlns:suki="https://github.com/kikipoulet/SukiUI"
     xmlns:core="clr-namespace:LokPass.Core.Password;assembly=LokPass.Core"
     xmlns:components="clr-namespace:LokPass.Desktop.Views.Components"
@@ -35,62 +34,8 @@
 
     <Grid RowDefinitions="Auto,Auto,*" Margin="12">
 
-        <!-- Add New Password Section -->
-        <suki:GlassCard Grid.Row="0" Margin="0,0,0,10">
-            <StackPanel>
-                <TextBlock Text="✚ Add New Entry"
-                           FontSize="12"
-                           FontWeight="SemiBold"
-                           Margin="0,0,0,8"
-                           Opacity="0.95" />
-
-                <Grid ColumnDefinitions="2*,2*,2*,Auto" Height="32">
-                    <TextBox Grid.Column="0"
-                             Margin="0,0,10,0"
-                             Watermark="Title"
-                             Text="{Binding NewTitle, Mode=TwoWay}"
-                             VerticalContentAlignment="Center"
-                             Classes.error="{Binding NewTitle, Converter={x:Static converters:StringConverters.IsNullOrEmpty}}"
-                             TabIndex="0"
-                             AutomationProperties.Name="Password entry title">
-                        <ToolTip.Tip>Enter a title for this password entry</ToolTip.Tip>
-                    </TextBox>
-
-                    <TextBox Grid.Column="1"
-                             Margin="0,0,10,0"
-                             Watermark="Username"
-                             Text="{Binding NewUsername, Mode=TwoWay}"
-                             VerticalContentAlignment="Center"
-                             Classes.error="{Binding NewUsername, Converter={x:Static converters:StringConverters.IsNullOrEmpty}}"
-                             TabIndex="1"
-                             AutomationProperties.Name="Username or email input field">
-                        <ToolTip.Tip>Enter the username or email address</ToolTip.Tip>
-                    </TextBox>
-
-                    <TextBox Grid.Column="2"
-                             Margin="0,0,10,0"
-                             Watermark="Password"
-                             Text="{Binding NewPassword, Mode=TwoWay}"
-                             PasswordChar="•"
-                             RevealPassword="False"
-                             VerticalContentAlignment="Center"
-                             TabIndex="2"
-                             Classes.error="{Binding NewPassword, Converter={x:Static converters:StringConverters.IsNullOrEmpty}}"
-                             AutomationProperties.Name="Password input field">
-                        <ToolTip.Tip>Enter a secure password</ToolTip.Tip>
-                    </TextBox>
-
-                    <Button Grid.Column="3"
-                            Command="{Binding AddUserPasswordCommand}"
-                            FontSize="11"
-                            Content="Add"
-                            Padding="16,8"
-                            AutomationProperties.Name="Add password">
-                        <ToolTip.Tip>Adds the new password to the list (Ctrl+Enter)</ToolTip.Tip>
-                    </Button>
-                </Grid>
-            </StackPanel>
-        </suki:GlassCard>
+        <!-- create a new password -->
+        <components:NewPasswordItem Grid.Row="0" />
 
         <!-- search and filter bar -->
         <components:SearchAndFilterBarItem Grid.Row="1" />
@@ -106,5 +51,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
     </Grid>
 </suki:SukiWindow>

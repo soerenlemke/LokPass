@@ -8,11 +8,10 @@ using LokPass.Core.Password;
 using LokPass.Core.Password.Crypto;
 using LokPass.Core.Password.Repositories;
 using LokPass.Core.TestData;
-using LokPass.Desktop.ViewModels;
-using LokPass.Desktop.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using MainWindowViewModel = LokPass.Desktop.MainWindow.MainWindowViewModel;
 
 namespace LokPass.Desktop;
 
@@ -58,7 +57,7 @@ public class App : Application
             var cryptoService = Services.GetRequiredService<ICryptoService>();
             var userConfiguration = TestDataService.CreateTestUserConfiguration();
 
-            var mainWindow = new MainWindow();
+            var mainWindow = new MainWindow.MainWindow();
             desktop.MainWindow = mainWindow;
 
             mainWindow.DataContext = new MainWindowViewModel(

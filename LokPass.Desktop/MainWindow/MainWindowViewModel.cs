@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Input.Platform;
@@ -12,7 +13,7 @@ using LokPass.Core.Password.Repositories;
 using LokPass.Core.TestData;
 using Microsoft.Extensions.Logging;
 
-namespace LokPass.Desktop.ViewModels;
+namespace LokPass.Desktop.MainWindow;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
@@ -33,9 +34,8 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private ObservableCollection<UserPassword> _userPasswords = [];
 
     // Parameterless constructor for designer
-    public MainWindowViewModel(IClipboard clipboard)
+    public MainWindowViewModel()
     {
-        _clipboard = clipboard;
         _userConfiguration = TestDataService.CreateTestUserConfiguration();
 
         // For designer - use InMemory Repository
@@ -44,7 +44,9 @@ public partial class MainWindowViewModel : ViewModelBase
         _passwordService = new PasswordService(repository, _cryptoService);
         _logger = null!;
 
+        // load test data
         FilteredPasswords = [];
+        _ = LoadTestDataAsync();
     }
 
     public MainWindowViewModel(
@@ -74,6 +76,22 @@ public partial class MainWindowViewModel : ViewModelBase
     partial void OnSearchTextChanged(string value)
     {
         FilterPasswords();
+    }
+
+    private async Task LoadTestDataAsync()
+    {
+        try
+        {
+            await _passwordService.AddNewPasswordAsync(UserConfiguration, "test title", "test username",
+                "980u23urndjofsndnf");
+
+            var passwords = await _passwordService.GetAllPasswordsAsync();
+            FilteredPasswords = new ObservableCollection<UserPassword>(passwords);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error loading test data: {ex.Message}");
+        }
     }
 
     private void FilterPasswords()
@@ -231,7 +249,7 @@ public partial class MainWindowViewModel : ViewModelBase
             _logger.LogInformation("Copied username: {userPasswordUsername}", userPassword.Username);
 
             // Clear success message after 3 seconds
-            _ = Task.Delay(3000).ContinueWith(_ => PopupMessage = "");
+            _ = Task.Delay(3000).ContinueWith<string>(_ => PopupMessage = "");
         }
         catch (Exception e)
         {
@@ -261,7 +279,7 @@ public partial class MainWindowViewModel : ViewModelBase
             _logger.LogInformation("Copied password for: {userPasswordTitle}", userPassword.Title);
 
             // Clear success message after 3 seconds
-            _ = Task.Delay(3000).ContinueWith(_ => PopupMessage = "");
+            _ = Task.Delay(3000).ContinueWith<string>(_ => PopupMessage = "");
 
             // TODO: Clear clipboard after a specific time for security?
         }

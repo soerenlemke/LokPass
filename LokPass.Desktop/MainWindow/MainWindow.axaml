@@ -1,24 +1,24 @@
 <suki:SukiWindow
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="using:LokPass.Desktop.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:suki="https://github.com/kikipoulet/SukiUI"
-    xmlns:components="clr-namespace:LokPass.Desktop.Views.Components"
+    xmlns:mainWindow="clr-namespace:LokPass.Desktop.MainWindow"
+    xmlns:components1="clr-namespace:LokPass.Desktop.MainWindow.Components"
     mc:Ignorable="d"
     Height="600"
     Width="800"
     d:DesignWidth="800"
     d:DesignHeight="600"
-    x:Class="LokPass.Desktop.Views.MainWindow"
-    x:DataType="vm:MainWindowViewModel"
+    x:Class="LokPass.Desktop.MainWindow.MainWindow"
+    x:DataType="mainWindow:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
     Title="LokPass v0.0.1"
     IsMenuVisible="True">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel />
+        <mainWindow:MainWindowViewModel />
     </Design.DataContext>
 
     <suki:SukiWindow.MenuItems>
@@ -34,16 +34,16 @@
     <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="12">
 
         <!-- Error/Success Message Banner -->
-        <components:MessageBanner Grid.Row="0" />
+        <components1:MessageBanner Grid.Row="0" />
 
         <!-- create a new password -->
-        <components:NewPassword Grid.Row="1" />
+        <components1:NewPassword Grid.Row="1" />
 
         <!-- search and filter bar -->
-        <components:SearchAndFilterBar Grid.Row="2" />
+        <components1:SearchAndFilterBar Grid.Row="2" />
 
         <!-- password list -->
-        <components:PasswordList Grid.Row="3" />
+        <components1:PasswordList Grid.Row="3" />
 
     </Grid>
 </suki:SukiWindow>

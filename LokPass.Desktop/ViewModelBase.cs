@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace LokPass.Desktop.ViewModels;
+namespace LokPass.Desktop;
+
 public class ViewModelBase : ObservableObject
 {
 }

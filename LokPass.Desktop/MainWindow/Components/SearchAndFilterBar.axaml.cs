@@ -1,8 +1,6 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 
-namespace LokPass.Desktop.Views.Components;
+namespace LokPass.Desktop.MainWindow.Components;
 
 public partial class SearchAndFilterBar : UserControl
 {

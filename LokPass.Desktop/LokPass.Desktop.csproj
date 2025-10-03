@@ -42,6 +42,32 @@
 
     <ItemGroup>
         <Folder Include="Assets\"/>
-        <Folder Include="Models\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="MainWindow\MainWindow.axaml.cs">
+            <DependentUpon>MainWindow.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="MainWindow\Components\MessageBanner.axaml.cs">
+            <DependentUpon>MessageBanner.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="MainWindow\Components\NewPassword.axaml.cs">
+            <DependentUpon>NewPassword.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="MainWindow\Components\SearchAndFilterBar.axaml.cs">
+            <DependentUpon>SearchAndFilterBar.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="MainWindow\Components\PasswordListItem.axaml.cs">
+            <DependentUpon>PasswordListItem.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="MainWindow\Components\PasswordList.axaml.cs">
+            <DependentUpon>PasswordList.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 </Project>

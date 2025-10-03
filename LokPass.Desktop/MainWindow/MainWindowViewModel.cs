@@ -4,6 +4,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,6 +14,7 @@ using LokPass.Core.Password;
 using LokPass.Core.Password.Crypto;
 using LokPass.Core.Password.Repositories;
 using LokPass.Core.TestData;
+using LokPass.Desktop.PasswordEditWindow;
 using Microsoft.Extensions.Logging;
 
 namespace LokPass.Desktop.MainWindow;
@@ -293,27 +297,31 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task EditUserPassword(UserPassword userPassword)
     {
-        try
+        var mainWindow = GetMainWindow();
+        if (mainWindow == null)
         {
-            // TODO: open a dialog
-            var newTitle = userPassword.Title + " (edited)";
-            var newUsername = userPassword.Username;
+            _logger.LogError("Cannot show dialog: Main window is null");
+            return;
+        }
 
-            await _passwordService.EditPasswordAsync(
+        var dialog = new EditPasswordDialog
+        {
+            DataContext = new EditPasswordDialogViewModel(
                 UserConfiguration,
-                userPassword.Id,
-                newTitle,
-                newUsername
-            );
+                userPassword,
+                _passwordService,
+                _cryptoService)
+        };
 
-            await RefreshPasswordsAsync();
+        var result = await dialog.ShowDialog<bool?>(mainWindow);
+        if (result == true) await RefreshPasswordsAsync();
+    }
 
-            _logger.LogInformation("Edited password: {userPasswordTitle}", userPassword.Title);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Failed to edit user password");
-        }
+    private Window? GetMainWindow()
+    {
+        return Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+            ? desktop.MainWindow
+            : null;
     }
 
     [RelayCommand]

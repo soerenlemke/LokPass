@@ -42,6 +42,7 @@
 
     <ItemGroup>
         <Folder Include="Assets\"/>
+        <Folder Include="Views\Windows\"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -69,5 +70,13 @@
             <DependentUpon>PasswordList.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
+        <Compile Update="PasswordEditWindow\EditPasswordDialog.axaml.cs">
+            <DependentUpon>EditPasswordDialog.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="PasswordEditWindow\EditPasswordDialog.axaml"/>
     </ItemGroup>
 </Project>

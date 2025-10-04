@@ -15,15 +15,20 @@
     x:DataType="mainWindow:MainWindowViewModel"
     Icon="/Assets/avalonia-logo.ico"
     Title="LokPass v0.0.1"
-    IsMenuVisible="True">
+    BackgroundAnimationEnabled="True"
+    BackgroundStyle="Flat"
+    CanResize="True">
 
     <Design.DataContext>
         <mainWindow:MainWindowViewModel />
     </Design.DataContext>
 
-    <suki:SukiWindow.MenuItems>
-        <MenuItem Header="Settings" Command="{Binding SettingsButtonCommand}" InputGesture="Alt+S" />
-    </suki:SukiWindow.MenuItems>
+    <suki:SukiWindow.RightWindowTitleBarControls>
+        <Button Command="{Binding OpenSettingsCommand}"
+                FontSize="12"
+                AutomationProperties.Name="Settings"
+                Content="⚙️" />
+    </suki:SukiWindow.RightWindowTitleBarControls>
 
     <suki:SukiWindow.TitleBarContextMenu>
         <ContextMenu>

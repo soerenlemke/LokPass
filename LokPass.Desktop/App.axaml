@@ -3,121 +3,14 @@
              x:Class="LokPass.Desktop.App"
              xmlns:local="using:LokPass.Desktop"
              RequestedThemeVariant="Dark"
-             xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
-             xmlns:suki="https://github.com/kikipoulet/SukiUI">
+             xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI">
 
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
 
     <Application.Styles>
-        <!-- SukiTheme FIRST - base theme -->
-        <sukiUi:SukiTheme ThemeColor="Green" />
-
-        <!-- Custom overrides AFTER - these will override SukiUI defaults -->
-        <Style Selector="Window">
-            <Setter Property="Background" Value="#0a0e0f" />
-        </Style>
-
-        <Style Selector="TextBlock">
-            <Setter Property="FontFamily" Value="Consolas,Monaco,monospace" />
-            <Setter Property="Foreground" Value="#4ade80" />
-        </Style>
-
-        <Style Selector="TextBox">
-            <Setter Property="FontFamily" Value="Consolas,Monaco,monospace" />
-            <Setter Property="Background" Value="#111827" />
-            <Setter Property="Foreground" Value="#d1fae5" />
-            <Setter Property="BorderBrush" Value="#22c55e" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="AcceptsReturn" Value="False" />
-            <Setter Property="TextWrapping" Value="NoWrap" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
-            <Setter Property="Transitions">
-                <Transitions>
-                    <ThicknessTransition Property="BorderThickness" Duration="0:0:0.15" />
-                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
-                    <BrushTransition Property="Background" Duration="0:0:0.15" />
-                </Transitions>
-            </Setter>
-        </Style>
-
-        <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-            <Setter Property="BorderBrush" Value="#4ade80" />
-            <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="Background" Value="#1a1f35" />
-        </Style>
-
-        <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-            <Setter Property="Background" Value="#1a1f35" />
-            <Setter Property="BorderBrush" Value="#4ade80" />
-        </Style>
-
-        <!-- Disable ScrollViewer in TextBox template -->
-        <Style Selector="TextBox /template/ ScrollViewer">
-            <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
-            <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
-        </Style>
-
-        <Style Selector="Button">
-            <Setter Property="FontFamily" Value="Consolas,Monaco,monospace" />
-            <Setter Property="Background" Value="#111827" />
-            <Setter Property="Foreground" Value="#4ade80" />
-            <Setter Property="BorderBrush" Value="#22c55e" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Padding" Value="12,8" />
-            <Setter Property="Transitions">
-                <Transitions>
-                    <BrushTransition Property="Background" Duration="0:0:0.15" />
-                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
-                    <BrushTransition Property="Foreground" Duration="0:0:0.15" />
-                </Transitions>
-            </Setter>
-        </Style>
-
-        <Style Selector="Button:pointerover">
-            <Setter Property="Background" Value="#1a1f35" />
-            <Setter Property="BorderBrush" Value="#4ade80" />
-            <Setter Property="Foreground" Value="#6ee7b7" />
-        </Style>
-
-        <Style Selector="Button:pressed">
-            <Setter Property="Background" Value="#22c55e" />
-            <Setter Property="Foreground" Value="#0a0e0f" />
-            <Setter Property="BorderBrush" Value="#22c55e" />
-        </Style>
-
-        <!-- Fix for Button ContentPresenter alignment -->
-        <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-        </Style>
-
-        <Style Selector="ListBox">
-            <Setter Property="Background" Value="Transparent" />
-        </Style>
-
-        <Style Selector="suki|GlassCard">
-            <Setter Property="Background" Value="#11182799" />
-            <Setter Property="BorderBrush" Value="#22c55e66" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Transitions">
-                <Transitions>
-                    <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
-                </Transitions>
-            </Setter>
-        </Style>
-
-        <Style Selector="suki|GlassCard:pointerover">
-            <Setter Property="BorderBrush" Value="#22c55e99" />
-        </Style>
+        <sukiUi:SukiTheme ThemeColor="Blue" />
     </Application.Styles>
 
 </Application>

@@ -204,9 +204,9 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void SettingsButton()
+    private void OpenSettings()
     {
-        _logger.LogInformation("ClickSettingsButton");
+        _logger.LogInformation("Open settings");
     }
 
     // PasswordListItem commands

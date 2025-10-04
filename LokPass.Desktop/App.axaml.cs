@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -75,7 +76,23 @@ public class App : Application
     {
         // Register core password services
         services.AddSingleton<ICryptoService, CryptoService>();
-        services.AddSingleton<IPasswordRepository, InMemoryPasswordRepository>();
+
+        /*
+            File path:
+           Windows: C:\Users\[Username]\AppData\Roaming\LokPass\passwords.json
+           macOS: /Users/[Username]/.config/LokPass/passwords.json
+           Linux: /home/[Username]/.config/LokPass/passwords.json
+         */
+
+        var passwordsFilePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "LokPass",
+            "passwords.json"
+        );
+
+        services.AddSingleton<IPasswordRepository>(provider =>
+            new FilePasswordRepository(passwordsFilePath));
+
         services.AddSingleton<IPasswordService, PasswordService>();
 
         // Register ViewModels if needed

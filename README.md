@@ -47,9 +47,14 @@ To be defined – possible options include:
 - [x] edit password / username
 - [ ] save passwords to file
 - [ ] load passwords from file
+- file path fixed for now:
+    - Windows: C:\Users\[Username]\AppData\Roaming\LokPass\passwords.json
+    - macOS: /Users/[Username]/.config/LokPass/passwords.json
+    - Linux: /home/[Username]/.config/LokPass/passwords.json
 
 ### v0.0.3
 
+- [ ] introduce settings menu window
 - [ ] user password input at startup for generating a user master key (needed for user configuration)
 - [ ] clear clipboard after time
 

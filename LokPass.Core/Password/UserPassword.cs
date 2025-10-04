@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using LokPass.Core.Password.Crypto;
 
 namespace LokPass.Core.Password;
@@ -12,7 +13,7 @@ public class UserPassword(
     public string Title { get; private set; } = title;
     public string Username { get; private set; } = username;
     public EncryptedPassword EncryptedPassword { get; private set; } = encryptedPassword;
-    public string DecryptedPassword { get; set; } = "*****";
+    [JsonIgnore] public string DecryptedPassword { get; set; } = "*****";
     public DateTime CreatedAt { get; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; private set; }
 

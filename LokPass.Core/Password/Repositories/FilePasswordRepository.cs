@@ -5,6 +5,28 @@ namespace LokPass.Core.Password.Repositories;
 
 public class FilePasswordRepository(string filePath) : IPasswordRepository
 {
+    // TODO: die gesamte Datei verschlüsseln
+    // TODO: Titel und Nutzername verschlüsseln
+    // TODO: Additional security:
+    /*
+     * // 1. Temporäre Datei für atomare Schreibvorgänge
+       var tempFile = _filePath + ".tmp";
+
+       var json = JsonSerializer.Serialize(passwords, _jsonOptions);
+       await File.WriteAllTextAsync(tempFile, json);
+
+       // 2. Atomarer Move
+       File.Move(tempFile, _filePath, true);
+
+       // 3. Dateiberechtigungen setzen (nur für aktuellen Benutzer)
+       if (OperatingSystem.IsWindows())
+       {
+           var fileInfo = new FileInfo(_filePath);
+           var fileSecurity = fileInfo.GetAccessControl();
+           // Zugriff nur für aktuellen Benutzer
+       }
+     */
+
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

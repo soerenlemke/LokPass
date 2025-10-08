@@ -121,7 +121,11 @@ public partial class MainWindowViewModel : ViewModelBase
             var passwords = await _passwordService.GetAllPasswordsAsync();
 
             UserPasswords.Clear();
-            foreach (var password in passwords) UserPasswords.Add(password);
+            foreach (var password in passwords)
+            {
+                password.DecryptedPassword = "*****";
+                UserPasswords.Add(password);
+            }
 
             FilterPasswords();
 
@@ -196,6 +200,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
             else
             {
+                newPassword.DecryptedPassword = "*****";
                 UserPasswords.Add(newPassword);
             }
         }

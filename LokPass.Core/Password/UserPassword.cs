@@ -9,7 +9,7 @@ public class UserPassword(
     EncryptedPassword encryptedPassword
 ) : IEquatable<UserPassword>
 {
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.NewGuid();
     public string Title { get; private set; } = title;
     public string Username { get; private set; } = username;
     public EncryptedPassword EncryptedPassword { get; private set; } = encryptedPassword;

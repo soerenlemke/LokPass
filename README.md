@@ -45,8 +45,8 @@ To be defined – possible options include:
 ### v0.0.2
 
 - [x] edit password / username
-- [ ] save passwords to file
-- [ ] load passwords from file
+- [x] save passwords to file
+- [x] load passwords from file
 - file path fixed for now:
     - Windows: C:\Users\[Username]\AppData\Roaming\LokPass\passwords.json
     - macOS: /Users/[Username]/.config/LokPass/passwords.json

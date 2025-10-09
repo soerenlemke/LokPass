@@ -34,6 +34,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty] private string _popupMessage = "";
     [ObservableProperty] private string _searchText = "";
+
+    private bool _showPasswordFlag;
     [ObservableProperty] private UserConfiguration _userConfiguration;
     [ObservableProperty] private ObservableCollection<UserPassword> _userPasswords = [];
 
@@ -119,13 +121,7 @@ public partial class MainWindowViewModel : ViewModelBase
         try
         {
             var passwords = await _passwordService.GetAllPasswordsAsync();
-
-            UserPasswords.Clear();
-            foreach (var password in passwords)
-            {
-                password.DecryptedPassword = "*****";
-                UserPasswords.Add(password);
-            }
+            UpdateObservableCollection(passwords);
 
             FilterPasswords();
 
@@ -148,11 +144,10 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             await _passwordService.AddNewPasswordAsync(UserConfiguration, NewTitle, NewUsername, NewPassword);
 
-            await RefreshPasswordsAsync();
-
             NewTitle = "";
             NewUsername = "";
             NewPassword = "";
+            await RefreshPasswordsAsync();
 
             _logger.LogInformation("New user password added!");
         }
@@ -166,14 +161,22 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         try
         {
-            var passwords = await _passwordService.GetAllPasswordsAsync();
-
-            UpdateObservableCollection(passwords);
+            if (_showPasswordFlag)
+            {
+                UpdateObservableCollection(UserPasswords);
+            }
+            else
+            {
+                var passwords = await _passwordService.GetAllPasswordsAsync();
+                UpdateObservableCollection(passwords);
+            }
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Failed to refresh passwords");
         }
+
+        _showPasswordFlag = false;
     }
 
     /// <summary>
@@ -200,7 +203,6 @@ public partial class MainWindowViewModel : ViewModelBase
             }
             else
             {
-                newPassword.DecryptedPassword = "*****";
                 UserPasswords.Add(newPassword);
             }
         }
@@ -221,10 +223,13 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         try
         {
+            _showPasswordFlag = true;
+
             if (userPassword.DecryptedPassword == "*****")
             {
                 userPassword.DecryptedPassword =
                     await _cryptoService.DecryptPasswordAsync(userPassword.EncryptedPassword, UserConfiguration);
+
                 _logger.LogInformation("Show password requested for: {userPasswordTitle}", userPassword.Title);
             }
             else
@@ -238,6 +243,7 @@ public partial class MainWindowViewModel : ViewModelBase
         catch (Exception e)
         {
             userPassword.DecryptedPassword = "*****";
+            _showPasswordFlag = false;
             _logger.LogError(e, "Failed to show password");
         }
     }

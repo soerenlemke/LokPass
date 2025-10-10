@@ -1,4 +1,4 @@
-$VERSION = "0.0.1"
+$VERSION = "0.0.2"
 $PROJECT = "LokPass.Desktop/LokPass.Desktop.csproj"
 
 Write-Host "Building LokPass v$VERSION for all platforms..." -ForegroundColor Green

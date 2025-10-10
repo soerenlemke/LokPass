@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:suki="https://github.com/kikipoulet/SukiUI"
+             xmlns:loginWindow="clr-namespace:LokPass.Desktop.LoginWindow"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LokPass.Desktop.LoginWindow.LoginDialog">
+    
+    <Design.DataContext>
+        <loginWindow:LoginDialogViewModel />
+    </Design.DataContext>
+    
+    <suki:GlassCard Margin="20">
+        <StackPanel Spacing="16">
+            <StackPanel>
+                <TextBlock Text="Master Password"
+                           FontSize="12"
+                           Opacity="0.7"
+                           Margin="0,0,0,4" />
+                <TextBox Text="{Binding MasterPassword}"
+                         Watermark="master password"
+                         Height="40" />
+            </StackPanel>
+        </StackPanel>
+    </suki:GlassCard>
+    
+</UserControl>

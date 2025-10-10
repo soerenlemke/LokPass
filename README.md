@@ -56,7 +56,7 @@ To be defined – possible options include:
 
 - [ ] introduce settings menu window
 - [ ] user password input at startup for generating a user master key (needed for user configuration)
-- [ ] clear clipboard after time
+- [x] clear clipboard after time
 
 ---
 

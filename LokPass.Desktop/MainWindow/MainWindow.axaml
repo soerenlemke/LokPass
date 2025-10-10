@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:suki="https://github.com/kikipoulet/SukiUI"
     xmlns:mainWindow="clr-namespace:LokPass.Desktop.MainWindow"
-    xmlns:components1="clr-namespace:LokPass.Desktop.MainWindow.Components"
+    xmlns:components="clr-namespace:LokPass.Desktop.MainWindow.Components"
     mc:Ignorable="d"
     Height="600"
     Width="800"
@@ -32,23 +32,23 @@
 
     <suki:SukiWindow.TitleBarContextMenu>
         <ContextMenu>
-            <MenuItem Header="LokPass" Command="{Binding SettingsButtonCommand}" />
+            <MenuItem Header="LokPass" Command="{Binding OpenSettingsCommand}" />
         </ContextMenu>
     </suki:SukiWindow.TitleBarContextMenu>
 
     <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="12">
 
         <!-- Error/Success Message Banner -->
-        <components1:MessageBanner Grid.Row="0" />
+        <components:MessageBanner Grid.Row="0" />
 
         <!-- create a new password -->
-        <components1:NewPassword Grid.Row="1" />
+        <components:NewPassword Grid.Row="1" />
 
         <!-- search and filter bar -->
-        <components1:SearchAndFilterBar Grid.Row="2" />
+        <components:SearchAndFilterBar Grid.Row="2" />
 
         <!-- password list -->
-        <components1:PasswordList Grid.Row="3" />
+        <components:PasswordList Grid.Row="3" />
 
     </Grid>
 </suki:SukiWindow>

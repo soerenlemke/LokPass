@@ -9,6 +9,7 @@ using LokPass.Core.Password;
 using LokPass.Core.Password.Crypto;
 using LokPass.Core.Password.Repositories;
 using LokPass.Core.TestData;
+using LokPass.Desktop.Domain.Clipboard;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -44,29 +45,36 @@ public class App : Application
         // Register your password services
         ConfigurePasswordServices(services);
 
-        // Build the service provider
-        Services = services.BuildServiceProvider();
-
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
 
+            // 1) Window erzeugen (damit wir das Clipboard haben)
+            var mainWindow = new MainWindow.MainWindow();
+            desktop.MainWindow = mainWindow;
+
+            // 2) ClipboardService *nach* dem Window registrieren (Factory nutzt mainWindow.Clipboard)
+            services.AddSingleton<IClipboardService>(_ => new ClipboardService(mainWindow.Clipboard!));
+
+            // 3) ServiceProvider bauen
+            Services = services.BuildServiceProvider();
+
+            // 4) ViewModel aus DI holen und setzen
             var logger = Services.GetRequiredService<ILogger<MainWindowViewModel>>();
             var passwordService = Services.GetRequiredService<IPasswordService>();
             var cryptoService = Services.GetRequiredService<ICryptoService>();
             var userConfiguration = TestDataService.CreateTestUserConfiguration();
-
-            var mainWindow = new MainWindow.MainWindow();
-            desktop.MainWindow = mainWindow;
+            var clipboardService = Services.GetRequiredService<IClipboardService>();
 
             mainWindow.DataContext = new MainWindowViewModel(
                 logger,
                 passwordService,
                 cryptoService,
                 userConfiguration,
-                mainWindow.Clipboard);
+                mainWindow.Clipboard,
+                clipboardService);
         }
 
         base.OnFrameworkInitializationCompleted();

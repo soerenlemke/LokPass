@@ -14,6 +14,7 @@ using LokPass.Core.Password;
 using LokPass.Core.Password.Crypto;
 using LokPass.Core.Password.Repositories;
 using LokPass.Core.TestData;
+using LokPass.Desktop.Domain.Clipboard;
 using LokPass.Desktop.PasswordEditWindow;
 using Microsoft.Extensions.Logging;
 
@@ -25,6 +26,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ICryptoService _cryptoService;
     private readonly ILogger<MainWindowViewModel> _logger;
     private readonly IPasswordService _passwordService;
+    private readonly IClipboardService _clipboardService;
 
     [ObservableProperty] private ObservableCollection<UserPassword> _filteredPasswords = [];
 
@@ -49,6 +51,7 @@ public partial class MainWindowViewModel : ViewModelBase
         var repository = new InMemoryPasswordRepository();
         _cryptoService = new CryptoService();
         _passwordService = new PasswordService(repository, _cryptoService);
+        _clipboardService = new ClipboardService(_clipboard!);
         _logger = null!;
 
         // load test data
@@ -61,13 +64,15 @@ public partial class MainWindowViewModel : ViewModelBase
         IPasswordService passwordService,
         ICryptoService cryptoService,
         UserConfiguration userConfiguration,
-        IClipboard? clipboard)
+        IClipboard? clipboard, 
+        IClipboardService clipboardService)
     {
         _logger = logger;
         _passwordService = passwordService;
         _cryptoService = cryptoService;
         _userConfiguration = userConfiguration;
         _clipboard = clipboard;
+        _clipboardService = clipboardService;
 
         if (_clipboard is null)
         {
@@ -260,12 +265,13 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            await _clipboard.SetTextAsync(userPassword.Username);
+            await _clipboardService.SetAutoResetValueAsync(userPassword.Username, 10000);
             PopupMessage = "✓ Username copied to clipboard!";
             _logger.LogInformation("Copied username: {userPasswordUsername}", userPassword.Username);
 
             // Clear success message after 3 seconds
-            _ = Task.Delay(3000).ContinueWith<string>(_ => PopupMessage = "");
+            _ = Task.Delay(3000)
+                .ContinueWith<string>(_ => PopupMessage = ""); // introducce MessageService for popups etc
         }
         catch (Exception e)
         {
@@ -290,14 +296,13 @@ public partial class MainWindowViewModel : ViewModelBase
                 userPassword.EncryptedPassword,
                 UserConfiguration);
 
-            await _clipboard.SetTextAsync(decryptedPassword);
+            await _clipboardService.SetAutoResetValueAsync(decryptedPassword, 10000);
             PopupMessage = "✓ Password copied to clipboard!";
             _logger.LogInformation("Copied password for: {userPasswordTitle}", userPassword.Title);
 
             // Clear success message after 3 seconds
-            _ = Task.Delay(3000).ContinueWith<string>(_ => PopupMessage = "");
-
-            // TODO: Clear clipboard after a specific time for security?
+            _ = Task.Delay(3000)
+                .ContinueWith<string>(_ => PopupMessage = ""); // introducce MessageService for popups etc
         }
         catch (Exception e)
         {
@@ -346,7 +351,7 @@ public partial class MainWindowViewModel : ViewModelBase
             UserPasswords.Remove(userPassword);
             FilteredPasswords.Remove(userPassword);
 
-            _logger.LogInformation($"Deleted password: {userPassword.Title}");
+            _logger.LogInformation("Deleted password: {userPassword.Title}", userPassword.Title);
         }
         catch (Exception e)
         {

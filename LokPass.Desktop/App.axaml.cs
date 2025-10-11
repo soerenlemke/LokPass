@@ -35,50 +35,53 @@ public class App : Application
 
         var services = new ServiceCollection();
 
-        // Configure logging
-        services.AddLogging(loggingBuilder =>
+        services.AddLogging(b =>
         {
-            loggingBuilder.ClearProviders();
-            loggingBuilder.AddSerilog();
+            b.ClearProviders();
+            b.AddSerilog();
         });
 
-        // Register your password services
         ConfigurePasswordServices(services);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
-            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
 
-            // 1) Window erzeugen (damit wir das Clipboard haben)
+            // 1) Window erzeugen, damit wir Clipboard haben
             var mainWindow = new MainWindow.MainWindow();
             desktop.MainWindow = mainWindow;
 
-            // 2) ClipboardService *nach* dem Window registrieren (Factory nutzt mainWindow.Clipboard)
-            services.AddSingleton<IClipboardService>(_ => new ClipboardService(mainWindow.Clipboard!));
+            // 2) ClipboardService VOR BuildServiceProvider registrieren
+            services.AddSingleton<IClipboardService>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<ClipboardService>>();
+                var clipboard = mainWindow.Clipboard
+                                ?? throw new InvalidOperationException("Clipboard not available yet.");
+                return new ClipboardService(clipboard, logger);
+            });
 
-            // 3) ServiceProvider bauen
+            // 3) Provider bauen (jetzt kennt er auch IClipboardService)
             Services = services.BuildServiceProvider();
 
-            // 4) ViewModel aus DI holen und setzen
-            var logger = Services.GetRequiredService<ILogger<MainWindowViewModel>>();
+            // 4) Ab hier Services auflösen
+            var vmLogger = Services.GetRequiredService<ILogger<MainWindowViewModel>>();
             var passwordService = Services.GetRequiredService<IPasswordService>();
             var cryptoService = Services.GetRequiredService<ICryptoService>();
-            var userConfiguration = TestDataService.CreateTestUserConfiguration();
-            var clipboardService = Services.GetRequiredService<IClipboardService>();
+            var userConfig = TestDataService.CreateTestUserConfiguration();
+            var clipboardSvc = Services.GetRequiredService<IClipboardService>();
 
             mainWindow.DataContext = new MainWindowViewModel(
-                logger,
+                vmLogger,
                 passwordService,
                 cryptoService,
-                userConfiguration,
-                mainWindow.Clipboard,
-                clipboardService);
+                userConfig,
+                mainWindow.Clipboard!, // falls dein VM das noch separat braucht
+                clipboardSvc);
         }
 
         base.OnFrameworkInitializationCompleted();
     }
+
 
     private void ConfigurePasswordServices(IServiceCollection services)
     {

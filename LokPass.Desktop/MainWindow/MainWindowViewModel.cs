@@ -23,10 +23,10 @@ namespace LokPass.Desktop.MainWindow;
 public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly IClipboard? _clipboard;
+    private readonly IClipboardService _clipboardService;
     private readonly ICryptoService _cryptoService;
     private readonly ILogger<MainWindowViewModel> _logger;
     private readonly IPasswordService _passwordService;
-    private readonly IClipboardService _clipboardService;
 
     [ObservableProperty] private ObservableCollection<UserPassword> _filteredPasswords = [];
 
@@ -51,8 +51,11 @@ public partial class MainWindowViewModel : ViewModelBase
         var repository = new InMemoryPasswordRepository();
         _cryptoService = new CryptoService();
         _passwordService = new PasswordService(repository, _cryptoService);
-        _clipboardService = new ClipboardService(_clipboard!);
+
         _logger = null!;
+
+        _clipboardService = new ClipboardService(_clipboard!, _logger);
+
 
         // load test data
         FilteredPasswords = [];
@@ -64,7 +67,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IPasswordService passwordService,
         ICryptoService cryptoService,
         UserConfiguration userConfiguration,
-        IClipboard? clipboard, 
+        IClipboard? clipboard,
         IClipboardService clipboardService)
     {
         _logger = logger;

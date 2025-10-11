@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Avalonia.Input.Platform;
+using Microsoft.Extensions.Logging;
 using Timer = System.Timers.Timer;
 
 namespace LokPass.Desktop.Domain.Clipboard;
@@ -10,13 +11,16 @@ namespace LokPass.Desktop.Domain.Clipboard;
 public sealed class ClipboardService : IClipboardService, IDisposable
 {
     private readonly IClipboard _clipboard;
+    private readonly Lock _lock = new();
+    private readonly ILogger _logger;
+
     private readonly Timer _timer;
     private string? _lastSetValue;
-    private readonly Lock _lock = new();
 
-    public ClipboardService(IClipboard clipboard)
+    public ClipboardService(IClipboard clipboard, ILogger logger)
     {
         _clipboard = clipboard ?? throw new ArgumentNullException(nameof(clipboard));
+        _logger = logger;
 
         _timer = new Timer
         {
@@ -27,7 +31,9 @@ public sealed class ClipboardService : IClipboardService, IDisposable
     }
 
     public async Task<string?> GetValueAsync()
-        => await _clipboard.GetTextAsync().ConfigureAwait(false);
+    {
+        return await _clipboard.GetTextAsync().ConfigureAwait(false);
+    }
 
     public async Task SetAutoResetValueAsync(string value, int millisecondsDelay = 3000, CancellationToken ct = default)
     {
@@ -44,39 +50,43 @@ public sealed class ClipboardService : IClipboardService, IDisposable
         }
     }
 
+    public void Dispose()
+    {
+        _timer.Elapsed -= OnTimerElapsed;
+        _timer.Dispose();
+    }
+
     private async void OnTimerElapsed(object? sender, ElapsedEventArgs e)
     {
         try
         {
             string? expected;
-            lock (_lock) { expected = _lastSetValue; }
+            lock (_lock)
+            {
+                expected = _lastSetValue;
+            }
 
             try
             {
                 var current = await _clipboard.GetTextAsync().ConfigureAwait(false);
                 if (string.Equals(current, expected, StringComparison.Ordinal))
-                {
                     await _clipboard.ClearAsync().ConfigureAwait(false);
-                }
             }
             catch
             {
-                // Logging optional einbauen – dont throw exceptions to ui
+                _logger.LogError("Failed to set clipboard");
             }
             finally
             {
-                lock (_lock) { _lastSetValue = null; }
+                lock (_lock)
+                {
+                    _lastSetValue = null;
+                }
             }
         }
         catch (Exception ex)
         {
-            throw; // TODO handle exception
+            _logger.LogError(ex, "Failed to set clipboard");
         }
-    }
-
-    public void Dispose()
-    {
-        _timer.Elapsed -= OnTimerElapsed;
-        _timer.Dispose();
     }
 }

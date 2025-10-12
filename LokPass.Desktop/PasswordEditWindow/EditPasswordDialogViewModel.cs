@@ -11,18 +11,21 @@ public partial class EditPasswordDialogViewModel : ViewModelBase
 {
     private readonly ICryptoService _cryptoService;
     private readonly IPasswordService _passwordService;
-    private readonly UserConfiguration _userConiguration;
-    private readonly UserPassword _userPassword;
+    private readonly UserConfiguration _userConfiguration;
+    private readonly UserPasswordView _userPassword;
 
     [ObservableProperty] private string _newPassword = "";
     [ObservableProperty] private string _newTitle = "";
     [ObservableProperty] private string _newUsername = "";
+    
+    public UserPasswordView Result { get; private set; }
 
     public EditPasswordDialogViewModel()
     {
-        _userConiguration = new UserConfiguration(
+        _userConfiguration = new UserConfiguration(
             new byte[32],
-            new byte[16]
+            new byte[16],
+            DateTime.Now
         );
         _cryptoService = new CryptoService();
         _passwordService = null!;
@@ -32,29 +35,33 @@ public partial class EditPasswordDialogViewModel : ViewModelBase
             []
         );
 
-        _userPassword = new UserPassword(
+        var userPassword = new UserPassword(
             Guid.NewGuid(),
-            "test password",
+            "test title",
             "test user",
             emptyEncryptedPassword,
             DateTime.UtcNow,
             null
         );
+        
+        _userPassword = new UserPasswordView(userPassword);
+        Result = _userPassword;
     }
 
     public EditPasswordDialogViewModel(
         UserConfiguration userConfiguration,
-        UserPassword userPassword,
+        UserPasswordView userPassword,
         IPasswordService passwordService,
         ICryptoService cryptoService)
     {
-        _userConiguration = userConfiguration;
+        _userConfiguration = userConfiguration;
         _userPassword = userPassword;
         _passwordService = passwordService;
         _cryptoService = cryptoService;
 
-        NewTitle = userPassword.Title;
-        NewUsername = userPassword.Username;
+        NewTitle = userPassword.Password.Title;
+        NewUsername = userPassword.Password.Username;
+        Result = _userPassword;
 
         _ = LoadPasswordAsync();
     }
@@ -64,8 +71,8 @@ public partial class EditPasswordDialogViewModel : ViewModelBase
         try
         {
             NewPassword = await _cryptoService.DecryptPasswordAsync(
-                _userPassword.EncryptedPassword,
-                _userConiguration);
+                _userPassword.Password.EncryptedPassword,
+                _userConfiguration);
         }
         catch (Exception)
         {
@@ -84,12 +91,30 @@ public partial class EditPasswordDialogViewModel : ViewModelBase
     [RelayCommand]
     private async Task Save()
     {
+        // 1. Service speichert (verschlüsselt und schreibt in Datei)
         await _passwordService.EditPasswordAsync(
-            _userConiguration,
-            _userPassword.Id,
+            _userConfiguration,
+            _userPassword.Password.Id,
             NewTitle,
             NewUsername,
-            string.IsNullOrEmpty(NewPassword) ? null : NewPassword);
+            string.IsNullOrWhiteSpace(NewPassword) ? null : NewPassword);
+
+        // 2. Gespeichertes Passwort aus Repository laden (enthält korrekte EncryptedPassword-Bytes)
+        var savedPassword = await _passwordService.GetPasswordByIdAsync(_userPassword.Password.Id);
+
+        if (savedPassword == null)
+        {
+            CloseRequested?.Invoke(this, false);
+            return;
+        }
+
+        // 3. Result mit dem tatsächlich gespeicherten Passwort-Objekt setzen
+        Result = new UserPasswordView(
+            Password: savedPassword,
+            DecryptedPassword: string.IsNullOrWhiteSpace(NewPassword)
+                ? _userPassword.DecryptedPassword
+                : NewPassword
+        );
 
         CloseRequested?.Invoke(this, true);
     }

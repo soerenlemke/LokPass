@@ -46,31 +46,31 @@ public class PasswordService(IPasswordRepository repository, ICryptoService cryp
         return decryptedPassword == password;
     }
 
-    public async Task EditPasswordAsync(UserConfiguration userConfiguration, Guid id, string title, string username,
+    public async Task EditPasswordAsync(
+        UserConfiguration userConfiguration,
+        Guid id,
+        string title,
+        string username,
         string? newPassword = null)
     {
-        var existingPassword = await repository.GetPasswordByIdAsync(id);
-        if (existingPassword == null) return;
+        var existing = await repository.GetPasswordByIdAsync(id);
+        if (existing == null) return;
 
-        var updatedPassword = existingPassword;
+        var encryptedPassword = existing.EncryptedPassword;
 
-        if (existingPassword.Title != title)
+        if (!string.IsNullOrWhiteSpace(newPassword))
         {
-            updatedPassword.WithTitle(title);
+            encryptedPassword = await cryptoService.EncryptPasswordAsync(
+                newPassword,
+                userConfiguration);
         }
 
-        if (existingPassword.Username != username)
-        {
-            updatedPassword.WithUsername(username);
-        }
+        var updated = existing
+            .WithTitle(title)
+            .WithUsername(username)
+            .WithPassword(encryptedPassword);
 
-        if (!string.IsNullOrEmpty(newPassword))
-        {
-            var encryptedPassword = await cryptoService.EncryptPasswordAsync(newPassword, userConfiguration);
-            updatedPassword.WithPassword(encryptedPassword);
-        }
-
-        if (!Equals(existingPassword, updatedPassword))
-            await repository.UpdatePasswordAsync(updatedPassword);
+        await repository.UpdatePasswordAsync(updated);
     }
+
 }

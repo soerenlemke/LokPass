@@ -247,7 +247,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task CopyUsername(UserPassword userPassword)
+    private async Task CopyUsername(UserPasswordView userPassword)
     {
         try
         {
@@ -258,9 +258,9 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            await _clipboardService.SetAutoResetValueAsync(userPassword.Username, 10000);
+            await _clipboardService.SetAutoResetValueAsync(userPassword.Password.Username, 10000);
             PopupMessage = "✓ Username copied to clipboard!";
-            _logger.LogInformation("Copied username: {userPasswordUsername}", userPassword.Username);
+            _logger.LogInformation("Copied username: {userPasswordUsername}", userPassword.Password.Username);
 
             // Clear success message after 3 seconds
             _ = Task.Delay(3000)
@@ -274,7 +274,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task CopyPassword(UserPassword userPassword)
+    private async Task CopyPassword(UserPasswordView userPassword)
     {
         try
         {
@@ -286,12 +286,12 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             var decryptedPassword = await _cryptoService.DecryptPasswordAsync(
-                userPassword.EncryptedPassword,
+                userPassword.Password.EncryptedPassword,
                 UserConfiguration);
 
             await _clipboardService.SetAutoResetValueAsync(decryptedPassword, 10000);
             PopupMessage = "✓ Password copied to clipboard!";
-            _logger.LogInformation("Copied password for: {userPasswordTitle}", userPassword.Title);
+            _logger.LogInformation("Copied password for: {userPasswordTitle}", userPassword.Password.Title);
 
             // Clear success message after 3 seconds
             _ = Task.Delay(3000)
@@ -305,7 +305,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task EditUserPassword(UserPassword userPassword)
+    private async Task EditUserPassword(UserPasswordView userPassword)
     {
         var mainWindow = GetMainWindow();
         if (mainWindow == null)
@@ -314,17 +314,32 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        var viewModel = new EditPasswordDialogViewModel(
+            UserConfiguration,
+            userPassword,
+            _passwordService,
+            _cryptoService);
+
         var dialog = new EditPasswordDialog
         {
-            DataContext = new EditPasswordDialogViewModel(
-                UserConfiguration,
-                userPassword,
-                _passwordService,
-                _cryptoService)
+            DataContext = viewModel
         };
 
         var result = await dialog.ShowDialog<bool?>(mainWindow);
-        if (result == true) await RefreshPasswordsAsync();
+        if (result == true)
+        {
+            var updatedPassword = viewModel.Result;
+
+            var index = UserPasswords.IndexOf(userPassword);
+            if (index >= 0)
+                UserPasswords[index] = updatedPassword;
+
+            var filteredIndex = FilteredPasswords.IndexOf(userPassword);
+            if (filteredIndex >= 0)
+                FilteredPasswords[filteredIndex] = updatedPassword;
+
+            _logger.LogInformation("Updated password: {Title}", updatedPassword.Password.Title);
+        }
     }
 
     private Window? GetMainWindow()
@@ -335,20 +350,20 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task DeleteUserPassword(UserPassword userPassword)
+    private async Task DeleteUserPassword(UserPasswordView userPassword)
     {
         try
         {
-            await _passwordService.DeletePasswordAsync(userPassword.Id);
+            await _passwordService.DeletePasswordAsync(userPassword.Password.Id);
 
-            var userPasswordView = UserPasswords.FirstOrDefault(p => p.Password.Id == userPassword.Id);
+            var userPasswordView = UserPasswords.FirstOrDefault(p => p.Password.Id == userPassword.Password.Id);
             if (userPasswordView != null)
             {
                 UserPasswords.Remove(userPasswordView);
                 FilteredPasswords.Remove(userPasswordView);
             }
 
-            _logger.LogInformation("Deleted password: {userPassword.Title}", userPassword.Title);
+            _logger.LogInformation("Deleted password: {userPassword.Title}", userPassword.Password.Title);
         }
         catch (Exception e)
         {

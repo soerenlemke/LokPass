@@ -54,7 +54,7 @@ To be defined – possible options include:
 
 ### v0.0.3
 
-- get rid of OOP and cleanup codebase
+- [ ] introduce functional programming patterns for codebase
 
 ### v0.0.4
 

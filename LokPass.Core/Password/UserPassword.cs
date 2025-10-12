@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using LokPass.Core.Password.Crypto;
 
 namespace LokPass.Core.Password;

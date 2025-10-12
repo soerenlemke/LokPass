@@ -17,6 +17,6 @@ public static class TestDataService
         if (testMasterKey.Length != 32) Array.Resize(ref testMasterKey, 32);
         if (testSalt.Length != 16) Array.Resize(ref testSalt, 16);
 
-        return new UserConfiguration(testMasterKey, testSalt);
+        return new UserConfiguration(testMasterKey, testSalt, DateTime.Now);
     }
 }

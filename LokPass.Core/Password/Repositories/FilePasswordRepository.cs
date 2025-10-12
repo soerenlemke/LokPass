@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using LokPass.Core.Password.Crypto;
 
 namespace LokPass.Core.Password.Repositories;
 
@@ -31,7 +32,8 @@ public class FilePasswordRepository(string filePath) : IPasswordRepository
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters = { new EncryptedPasswordJsonConverter() }
     };
 
     public async Task<IEnumerable<UserPassword>> GetAllPasswordsAsync()
@@ -77,7 +79,12 @@ public class FilePasswordRepository(string filePath) : IPasswordRepository
             passwords[index] = userPassword;
             await SavePasswordsAsync(passwords);
         }
+        else
+        {
+            // TODO: logging Console.WriteLine($"Password {userPassword.Id} not found for update!");
+        }
     }
+
 
     public async Task DeletePasswordAsync(Guid id)
     {
@@ -95,6 +102,34 @@ public class FilePasswordRepository(string filePath) : IPasswordRepository
         if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory)) Directory.CreateDirectory(directory);
 
         await File.WriteAllTextAsync(filePath, json);
+    }
+    
+    private class EncryptedPasswordJsonConverter : JsonConverter<EncryptedPassword>
+    {
+        public override EncryptedPassword Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options)
+        {
+            using var doc = JsonDocument.ParseValue(ref reader);
+            var root = doc.RootElement;
+
+            var password = root.GetProperty("password").GetBytesFromBase64();
+            var iv = root.GetProperty("iv").GetBytesFromBase64();
+
+            return new EncryptedPassword(password, iv);
+        }
+
+        public override void Write(
+            Utf8JsonWriter writer,
+            EncryptedPassword value,
+            JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteBase64String("password", value.Password);
+            writer.WriteBase64String("iv", value.Iv);
+            writer.WriteEndObject();
+        }
     }
 }
 

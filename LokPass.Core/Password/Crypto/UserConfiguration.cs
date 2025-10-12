@@ -1,8 +1,9 @@
 namespace LokPass.Core.Password.Crypto;
 
-public class UserConfiguration(byte[] masterKey, byte[] salt)
-{
-    public byte[] MasterKey { get; set; } = masterKey;
-    public byte[] Salt { get; set; } = salt;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-}
+public sealed record UserConfiguration(
+    byte[] MasterKey,
+    byte[] Salt,
+    DateTime CreatedAt
+);
+
+// TODO: public sealed record UserConfiguration()

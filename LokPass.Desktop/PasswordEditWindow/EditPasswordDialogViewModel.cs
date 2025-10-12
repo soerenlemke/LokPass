@@ -33,9 +33,12 @@ public partial class EditPasswordDialogViewModel : ViewModelBase
         );
 
         _userPassword = new UserPassword(
+            Guid.NewGuid(),
             "test password",
             "test user",
-            emptyEncryptedPassword
+            emptyEncryptedPassword,
+            DateTime.UtcNow,
+            null
         );
     }
 

@@ -28,7 +28,9 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ILogger<MainWindowViewModel> _logger;
     private readonly IPasswordService _passwordService;
 
-    [ObservableProperty] private ObservableCollection<UserPassword> _filteredPasswords = [];
+    [ObservableProperty] private UserConfiguration _userConfiguration;
+    [ObservableProperty] private ObservableCollection<UserPasswordView> _userPasswords = [];
+    [ObservableProperty] private ObservableCollection<UserPasswordView> _filteredPasswords = [];
 
     [ObservableProperty] private string _newPassword = "";
     [ObservableProperty] private string _newTitle = "";
@@ -38,8 +40,6 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _searchText = "";
 
     private bool _showPasswordFlag;
-    [ObservableProperty] private UserConfiguration _userConfiguration;
-    [ObservableProperty] private ObservableCollection<UserPassword> _userPasswords = [];
 
     // Parameterless constructor for designer
     public MainWindowViewModel()
@@ -101,7 +101,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 "980u23urndjofsndnf");
 
             var passwords = await _passwordService.GetAllPasswordsAsync();
-            FilteredPasswords = new ObservableCollection<UserPassword>(passwords);
+            var passwordViews = passwords.Select(p => new UserPasswordView(p));
+            FilteredPasswords = new ObservableCollection<UserPasswordView>(passwordViews);
         }
         catch (Exception ex)
         {
@@ -111,17 +112,11 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void FilterPasswords()
     {
-        if (string.IsNullOrEmpty(SearchText))
-        {
-            FilteredPasswords = new ObservableCollection<UserPassword>(UserPasswords);
-            return;
-        }
-
         var filtered = UserPasswords.Where(p =>
-            p.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-            p.Username.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
+            p.Password.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+            p.Password.Username.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
 
-        FilteredPasswords = new ObservableCollection<UserPassword>(filtered);
+        FilteredPasswords = new ObservableCollection<UserPasswordView>(filtered);
     }
 
     private async Task LoadPasswordsAsync()
@@ -171,7 +166,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (_showPasswordFlag)
             {
-                UpdateObservableCollection(UserPasswords);
+                UpdateObservableCollection(UserPasswords.Select(v => v.Password));
             }
             else
             {
@@ -197,21 +192,22 @@ public partial class MainWindowViewModel : ViewModelBase
         for (var i = UserPasswords.Count - 1; i >= 0; i--)
         {
             var existing = UserPasswords[i];
-            if (newPasswordsList.All(p => p.Id != existing.Id)) UserPasswords.RemoveAt(i);
+            if (newPasswordsList.All(p => p.Id != existing.Password.Id)) UserPasswords.RemoveAt(i);
         }
 
         foreach (var newPassword in newPasswordsList)
         {
             var userPasswordsList = UserPasswords.ToList();
-            var existingIndex = userPasswordsList.FindIndex(p => p.Id == newPassword.Id);
+            var existingIndex = userPasswordsList.FindIndex(p => p.Password.Id == newPassword.Id);
 
             if (existingIndex >= 0)
             {
-                if (!UserPasswords[existingIndex].Equals(newPassword)) UserPasswords[existingIndex] = newPassword;
+                if (!UserPasswords[existingIndex].Equals(new UserPasswordView(newPassword)))
+                    UserPasswords[existingIndex] = new UserPasswordView(newPassword);
             }
             else
             {
-                UserPasswords.Add(newPassword);
+                UserPasswords.Add(new UserPasswordView(newPassword));
             }
         }
 
@@ -227,33 +223,27 @@ public partial class MainWindowViewModel : ViewModelBase
     // PasswordListItem commands
 
     [RelayCommand]
-    private async Task ShowPassword(UserPassword userPassword)
+    private async Task ShowPassword(UserPasswordView userPasswordView)
     {
-        try
+        UserPasswordView updated;
+
+        if (userPasswordView.DecryptedPassword == "*****")
         {
+            updated = await userPasswordView.WithDecryptedPasswordAsync(_cryptoService, UserConfiguration);
             _showPasswordFlag = true;
-
-            if (userPassword.DecryptedPassword == "*****")
-            {
-                userPassword.DecryptedPassword =
-                    await _cryptoService.DecryptPasswordAsync(userPassword.EncryptedPassword, UserConfiguration);
-
-                _logger.LogInformation("Show password requested for: {userPasswordTitle}", userPassword.Title);
-            }
-            else
-            {
-                userPassword.DecryptedPassword = "*****";
-                _logger.LogInformation("Hide password requested for: {userPasswordTitle}", userPassword.Title);
-            }
-
-            await RefreshPasswordsAsync();
         }
-        catch (Exception e)
+        else
         {
-            userPassword.DecryptedPassword = "*****";
-            _showPasswordFlag = false;
-            _logger.LogError(e, "Failed to show password");
+            updated = userPasswordView with { DecryptedPassword = "*****" };
         }
+
+        var index = UserPasswords.IndexOf(userPasswordView);
+        if (index >= 0)
+            UserPasswords[index] = updated;
+
+        var filteredIndex = FilteredPasswords.IndexOf(userPasswordView);
+        if (filteredIndex >= 0)
+            FilteredPasswords[filteredIndex] = updated;
     }
 
     [RelayCommand]
@@ -351,8 +341,12 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             await _passwordService.DeletePasswordAsync(userPassword.Id);
 
-            UserPasswords.Remove(userPassword);
-            FilteredPasswords.Remove(userPassword);
+            var userPasswordView = UserPasswords.FirstOrDefault(p => p.Password.Id == userPassword.Id);
+            if (userPasswordView != null)
+            {
+                UserPasswords.Remove(userPasswordView);
+                FilteredPasswords.Remove(userPasswordView);
+            }
 
             _logger.LogInformation("Deleted password: {userPassword.Title}", userPassword.Title);
         }

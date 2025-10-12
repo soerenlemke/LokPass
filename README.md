@@ -54,6 +54,10 @@ To be defined – possible options include:
 
 ### v0.0.3
 
+- get rid of OOP and cleanup codebase
+
+### v0.0.4
+
 - [ ] introduce settings menu window
 - [ ] user password input at startup for generating a user master key (needed for user configuration)
 - [x] clear clipboard after time (currently fixed 10s)

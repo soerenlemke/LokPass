@@ -3,63 +3,36 @@ using LokPass.Core.Password.Crypto;
 
 namespace LokPass.Core.Password;
 
-public class UserPassword(
-    string title,
-    string username,
-    EncryptedPassword encryptedPassword
-) : IEquatable<UserPassword>
+public sealed record UserPassword(
+    Guid Id,
+    string Title,
+    string Username,
+    EncryptedPassword EncryptedPassword,
+    DateTime CreatedAt,
+    DateTime? UpdatedAt
+)
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
-    public string Title { get; private set; } = title;
-    public string Username { get; private set; } = username;
-    public EncryptedPassword EncryptedPassword { get; private set; } = encryptedPassword;
-    [JsonIgnore] public string DecryptedPassword { get; set; } = "*****";
-    public DateTime CreatedAt { get; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; private set; }
+    public UserPassword WithTitle(string newTitle) =>
+        this with { Title = newTitle, UpdatedAt = DateTime.UtcNow };
 
-    public bool Equals(UserPassword? other)
+    public UserPassword WithUsername(string newUsername) =>
+        this with { Username = newUsername, UpdatedAt = DateTime.UtcNow };
+
+    public UserPassword WithPassword(EncryptedPassword newPassword) =>
+        this with { EncryptedPassword = newPassword, UpdatedAt = DateTime.UtcNow };
+}
+
+public sealed record UserPasswordView(
+    UserPassword Password,
+    string DecryptedPassword = "*****"
+)
+{
+    public async Task<UserPasswordView> WithDecryptedPasswordAsync(
+        ICryptoService cryptoService,
+        UserConfiguration userConfiguration)
     {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-
-        return Title == other.Title &&
-               Username == other.Username &&
-               EncryptedPassword == other.EncryptedPassword;
-    }
-
-    public void UpdateTitle(string title)
-    {
-        if (Title == title) return;
-
-        Title = title;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateUsername(string username)
-    {
-        if (Username == username) return;
-
-        Username = username;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdatePassword(EncryptedPassword encryptedPassword)
-    {
-        if (EncryptedPassword == encryptedPassword) return;
-
-        EncryptedPassword = encryptedPassword;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        return obj.GetType() == GetType() && Equals((UserPassword)obj);
-    }
-
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
+        var decryptedPassword =
+            await cryptoService.DecryptPasswordAsync(Password.EncryptedPassword, userConfiguration);
+        return this with { DecryptedPassword = decryptedPassword };
     }
 }

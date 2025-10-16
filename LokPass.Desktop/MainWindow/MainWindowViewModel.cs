@@ -150,6 +150,8 @@ public partial class MainWindowViewModel : ViewModelBase
             NewTitle = "";
             NewUsername = "";
             NewPassword = "";
+
+            _showPasswordFlag = false;
             await RefreshPasswordsAsync();
 
             _logger.LogInformation("New user password added!");

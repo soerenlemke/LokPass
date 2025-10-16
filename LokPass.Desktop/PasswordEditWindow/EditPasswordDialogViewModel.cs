@@ -91,7 +91,6 @@ public partial class EditPasswordDialogViewModel : ViewModelBase
     [RelayCommand]
     private async Task Save()
     {
-        // 1. Service speichert (verschlüsselt und schreibt in Datei)
         await _passwordService.EditPasswordAsync(
             _userConfiguration,
             _userPassword.Password.Id,
@@ -99,7 +98,6 @@ public partial class EditPasswordDialogViewModel : ViewModelBase
             NewUsername,
             string.IsNullOrWhiteSpace(NewPassword) ? null : NewPassword);
 
-        // 2. Gespeichertes Passwort aus Repository laden (enthält korrekte EncryptedPassword-Bytes)
         var savedPassword = await _passwordService.GetPasswordByIdAsync(_userPassword.Password.Id);
 
         if (savedPassword == null)
@@ -108,7 +106,6 @@ public partial class EditPasswordDialogViewModel : ViewModelBase
             return;
         }
 
-        // 3. Result mit dem tatsächlich gespeicherten Passwort-Objekt setzen
         Result = new UserPasswordView(
             Password: savedPassword,
             DecryptedPassword: string.IsNullOrWhiteSpace(NewPassword)
